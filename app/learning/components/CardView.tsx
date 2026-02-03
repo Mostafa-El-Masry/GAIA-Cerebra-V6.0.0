@@ -12,7 +12,7 @@ export default function CardView({
   onStatusChange: (id: string, status: LearningNode["status"]) => void
   onMetaChange: (
     id: string,
-    field: "track" | "category" | "order",
+    field: "track" | "category" | "order" | "projectPath",
     value: string | number
   ) => void
 }) {

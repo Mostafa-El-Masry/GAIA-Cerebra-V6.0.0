@@ -10,4 +10,6 @@ export type LearningNode = {
   track?: string
   category?: string
   order?: number
+
+  projectPath?: string   // e.g. "/projects/javascript-01"
 }
