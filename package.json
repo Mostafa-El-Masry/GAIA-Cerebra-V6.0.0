@@ -16,7 +16,6 @@
     "@hugeicons/core-free-icons": "^2.0.0",
     "@hugeicons/react": "^1.1.1",
     "@monaco-editor/react": "^4.7.0",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.81.1",
     "@vercel/speed-insights": "^1.2.0",
     "clsx": "^2.1.1",

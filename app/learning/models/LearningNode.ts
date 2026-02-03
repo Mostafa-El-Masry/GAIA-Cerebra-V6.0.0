@@ -6,4 +6,8 @@ export type LearningNode = {
   status: 'not started' | 'in progress' | 'completed'
   score?: number
   phase?: number
+
+  track?: string
+  category?: string
+  order?: number
 }

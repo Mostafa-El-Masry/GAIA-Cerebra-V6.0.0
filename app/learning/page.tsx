@@ -3,10 +3,14 @@
 import { useEffect, useState } from "react"
 import { LearningNode } from "./models/LearningNode"
 import { loadLearningNodes, updateLearningNodeStatus } from "./actions"
-import NodeCard from "./components/NodeCard"
+
+import ViewToggle from "./components/ViewToggle"
+import ListView from "./components/ListView"
+import CardView from "./components/CardView"
 
 export default function LearningPage() {
   const [nodes, setNodes] = useState<LearningNode[]>([])
+  const [view, setView] = useState<"list" | "cards">("list")
 
   useEffect(() => {
     loadLearningNodes().then(setNodes)
@@ -21,19 +25,15 @@ export default function LearningPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">Learning Nodes</h1>
+      <h1 className="text-xl font-bold">Learning Map</h1>
 
-      {nodes.length === 0 && (
-        <p className="text-sm text-gray-500">No learning nodes found.</p>
+      <ViewToggle view={view} onChange={setView} />
+
+      {view === "list" ? (
+        <ListView nodes={nodes} onStatusChange={onStatusChange} />
+      ) : (
+        <CardView nodes={nodes} onStatusChange={onStatusChange} />
       )}
-
-      {nodes.map(node => (
-        <NodeCard
-          key={node.id}
-          node={node}
-          onStatusChange={onStatusChange}
-        />
-      ))}
     </div>
   )
 }
