@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "gallery:scan": "node scripts/scan-gallery.cjs",
-    "postinstall": "node scripts/patch-next.cjs"
+    "gallery:scan": "node scripts/scan-gallery.cjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
