@@ -144,7 +144,7 @@ export default function Vault({ cryptoKey, initial, onLock }: Props) {
         <div className="flex flex-wrap items-center gap-2">
           <ImportChrome onImport={importEntries} />
           <Button onClick={onExport} className="opacity-90">Export (encrypted)</Button>
-          <a href="/ELEUTHIA/Backups" className="text-sm underline hover:no-underline">Backups → â†’</a>
+          <a href="/Eleuthia/Backups" className="text-sm underline hover:no-underline">Backups → â†’</a>
           <Button onClick={onLock} className="opacity-75">Lock</Button>
         </div>
       </header>

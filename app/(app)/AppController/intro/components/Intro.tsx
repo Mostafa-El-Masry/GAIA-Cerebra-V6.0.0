@@ -6,7 +6,7 @@ import {
   Sparkles,
   Clock,
   Heart,
-  BookOpen,
+  Lightbulb,
   TrendingUp,
   LayoutDashboard,
   Shield,
@@ -25,7 +25,7 @@ export default function Intro() {
     { href: "/apollo", label: "Apollo", icon: Sparkles },
     { href: "/timeline", label: "Timeline", icon: Clock },
     { href: "/health-awakening", label: "Health", icon: Heart },
-    { href: "/learning", label: "Learning", icon: BookOpen },
+    { href: "/Eleuthia", label: "Eleuthia", icon: Lightbulb },
   ];
   const right = [
     { href: "/wealth-awakening", label: "Wealth", icon: TrendingUp },
@@ -39,7 +39,7 @@ export default function Intro() {
     Apollo: "AI workspace and labs",
     Timeline: "Track recent sessions",
     Health: "Vitals and recovery",
-    Learning: "Learning nodes and progress",
+    Eleuthia: "Creative vault and inspiration",
     Wealth: "Capital and flow",
     Dashboard: "Control room overview",
     Guardian: "Security and monitoring",

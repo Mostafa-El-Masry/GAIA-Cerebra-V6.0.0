@@ -6,13 +6,25 @@ import Unlock from "./Unlock";
 import Vault from "./Vault";
 import type { EleuVault } from "../types";
 
+const STORAGE_WAIT_MS = 800;
+
 export default function EleuthiaClient() {
   const [storageReady, setStorageReady] = useState(false);
   const [k, setK] = useState<CryptoKey | null>(null);
   const [v, setV] = useState<EleuVault | null>(null);
 
   useEffect(() => {
-    waitForUserStorage().then(() => setStorageReady(true));
+    let cancelled = false;
+    const timeout = setTimeout(() => {
+      if (!cancelled) setStorageReady(true);
+    }, STORAGE_WAIT_MS);
+    waitForUserStorage().then(() => {
+      if (!cancelled) setStorageReady(true);
+    });
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, []);
 
   if (!storageReady) {

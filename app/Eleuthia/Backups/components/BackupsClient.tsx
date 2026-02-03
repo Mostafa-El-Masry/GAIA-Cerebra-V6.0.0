@@ -2,8 +2,8 @@
 
 import { useMemo, useRef, useState } from "react";
 import Button from "@/app/DesignSystem/components/Button";
-import { listSnapshots, addSnapshot, deleteSnapshot, type Snapshot } from "@/app/ELEUTHIA/lib/snapshots";
-import { readVaultCipher, writeVaultCipher } from "@/app/ELEUTHIA/lib/storage";
+import { listSnapshots, addSnapshot, deleteSnapshot, type Snapshot } from "@/app/Eleuthia/lib/snapshots";
+import { readVaultCipher, writeVaultCipher } from "@/app/Eleuthia/lib/storage";
 
 function uid(prefix = "snap") {
   const r = Math.random().toString(36).slice(2, 8);

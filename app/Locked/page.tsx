@@ -1,6 +1,6 @@
 'use client';
 
-import EleuGate from "../ELEUTHIA/components/EleuGate";
+import EleuGate from "../Eleuthia/components/EleuGate";
 
 export default function LockedDemoPage() {
   return (

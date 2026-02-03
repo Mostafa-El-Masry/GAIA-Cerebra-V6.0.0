@@ -25,7 +25,7 @@ export default function AppBar() {
   const navLinks = [
     { href: "/instagram", label: "Instagram" },
     { href: "/apollo", label: "Apollo" },
-    { href: "/ELEUTHIA", label: "ELEUTHIA" },
+    { href: "/Eleuthia", label: "Eleuthia" },
     { href: "/timeline", label: "Timeline" },
     { href: "/health", label: "Health" },
     { href: "/wealth", label: "Wealth" },
