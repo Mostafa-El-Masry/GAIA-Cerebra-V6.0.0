@@ -2,16 +2,25 @@
   {
     "id": "node-1",
     "title": "JS Project 1",
-    "status": "in progress"
+    "status": "completed",
+    "order": 1,
+    "track": "javascript",
+    "category": "projects"
   },
   {
     "id": "node-2",
     "title": "JS Project 2",
-    "status": "completed"
+    "status": "completed",
+    "order": 2,
+    "track": "javascript",
+    "category": "projects"
   },
   {
     "id": "node-3",
     "title": "JS Project 3",
-    "status": "not started"
+    "status": "completed",
+    "order": 3,
+    "track": "javascript",
+    "category": "projects"
   }
 ]

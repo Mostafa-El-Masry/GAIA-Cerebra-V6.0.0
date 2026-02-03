@@ -18,3 +18,16 @@ export async function updateLearningNodeStatus(
   nodes[index] = { ...nodes[index], status }
   saveNodes(nodes)
 }
+
+export async function updateLearningNodeMeta(
+  id: string,
+  field: "track" | "category" | "order",
+  value: string | number
+) {
+  const nodes = getNodes()
+  const index = nodes.findIndex(n => n.id === id)
+  if (index === -1) return
+
+  nodes[index] = { ...nodes[index], [field]: value }
+  saveNodes(nodes)
+}

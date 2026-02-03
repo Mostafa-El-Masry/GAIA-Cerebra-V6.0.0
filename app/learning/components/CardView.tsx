@@ -5,10 +5,16 @@ import NodeCard from "./NodeCard"
 
 export default function CardView({
   nodes,
-  onStatusChange
+  onStatusChange,
+  onMetaChange
 }: {
   nodes: LearningNode[]
   onStatusChange: (id: string, status: LearningNode["status"]) => void
+  onMetaChange: (
+    id: string,
+    field: "track" | "category" | "order",
+    value: string | number
+  ) => void
 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -19,6 +25,7 @@ export default function CardView({
             key={node.id}
             node={node}
             onStatusChange={onStatusChange}
+            onMetaChange={onMetaChange}
           />
         ))}
     </div>

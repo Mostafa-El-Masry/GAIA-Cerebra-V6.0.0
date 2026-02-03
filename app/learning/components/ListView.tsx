@@ -5,10 +5,16 @@ import NodeCard from "./NodeCard"
 
 export default function ListView({
   nodes,
-  onStatusChange
+  onStatusChange,
+  onMetaChange
 }: {
   nodes: LearningNode[]
   onStatusChange: (id: string, status: LearningNode["status"]) => void
+  onMetaChange: (
+    id: string,
+    field: "track" | "category" | "order",
+    value: string | number
+  ) => void
 }) {
   const grouped = nodes.reduce<Record<string, LearningNode[]>>(
     (acc, node) => {
@@ -33,6 +39,7 @@ export default function ListView({
                   key={node.id}
                   node={node}
                   onStatusChange={onStatusChange}
+                  onMetaChange={onMetaChange}
                 />
               ))}
           </div>

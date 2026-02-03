@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { LearningNode } from "./models/LearningNode"
-import { loadLearningNodes, updateLearningNodeStatus } from "./actions"
+import {
+  loadLearningNodes,
+  updateLearningNodeStatus,
+  updateLearningNodeMeta
+} from "./actions"
 
 import ViewToggle from "./components/ViewToggle"
 import ListView from "./components/ListView"
@@ -16,10 +20,24 @@ export default function LearningPage() {
     loadLearningNodes().then(setNodes)
   }, [])
 
-  async function onStatusChange(id: string, status: LearningNode["status"]) {
+  async function onStatusChange(
+    id: string,
+    status: LearningNode["status"]
+  ) {
     await updateLearningNodeStatus(id, status)
     setNodes(prev =>
       prev.map(n => (n.id === id ? { ...n, status } : n))
+    )
+  }
+
+  async function onMetaChange(
+    id: string,
+    field: "track" | "category" | "order",
+    value: string | number
+  ) {
+    await updateLearningNodeMeta(id, field, value)
+    setNodes(prev =>
+      prev.map(n => (n.id === id ? { ...n, [field]: value } : n))
     )
   }
 
@@ -30,9 +48,17 @@ export default function LearningPage() {
       <ViewToggle view={view} onChange={setView} />
 
       {view === "list" ? (
-        <ListView nodes={nodes} onStatusChange={onStatusChange} />
+        <ListView
+          nodes={nodes}
+          onStatusChange={onStatusChange}
+          onMetaChange={onMetaChange}
+        />
       ) : (
-        <CardView nodes={nodes} onStatusChange={onStatusChange} />
+        <CardView
+          nodes={nodes}
+          onStatusChange={onStatusChange}
+          onMetaChange={onMetaChange}
+        />
       )}
     </div>
   )
