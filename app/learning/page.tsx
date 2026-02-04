@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { LearningNode } from "./models/LearningNode"
 import {
   loadLearningNodes,
@@ -137,7 +138,15 @@ export default function LearningPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">Learning Map</h1>
+      <div className="flex items-center gap-4 flex-wrap">
+        <h1 className="text-xl font-bold">Learning Map</h1>
+        <Link
+          href="/learning/graph"
+          className="text-sm text-blue-600 hover:underline"
+        >
+          Graph View
+        </Link>
+      </div>
 
       <TruthPanel nodes={nodes} folders={folders} />
 
