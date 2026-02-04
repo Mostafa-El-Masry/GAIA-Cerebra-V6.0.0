@@ -1,13 +1,15 @@
 import { LearningNode } from "../models/LearningNode"
 import { Skill } from "../models/Skill"
 import { Lesson } from "../models/Lesson"
+import type { LearningNode as FileLearningNode } from "./learningIndex"
 
 type NodeType = "project" | "skill" | "lesson"
 
 export function buildGraph(
   nodes: LearningNode[],
   skills: Skill[],
-  lessons: Lesson[]
+  lessons: Lesson[],
+  fileLessons?: FileLearningNode[]
 ) {
   const graphNodes: {
     id: string
@@ -64,6 +66,36 @@ export function buildGraph(
       position: { x: LESSON_X, y: i * ROW_HEIGHT }
     })
   })
+
+  const learningNodes = fileLessons ?? []
+
+  learningNodes
+    .filter((n): n is FileLearningNode => n.type === "skill")
+    .forEach((skill, index) => {
+      graphNodes.push({
+        id: `skill-${skill.id}`,
+        type: "skill",
+        data: { label: skill.title, type: "skill" },
+        position: {
+          x: SKILL_X,
+          y: (skills.length + index) * 140
+        }
+      })
+    })
+
+  learningNodes
+    .filter((n): n is FileLearningNode => n.type === "lesson")
+    .forEach((lesson, index) => {
+      graphNodes.push({
+        id: `lesson-${lesson.id}`,
+        type: "lesson",
+        data: { label: lesson.title, type: "lesson" },
+        position: {
+          x: LESSON_X,
+          y: (lessons.length + index) * 120
+        }
+      })
+    })
 
   return { graphNodes, edges }
 }

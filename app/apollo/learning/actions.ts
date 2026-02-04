@@ -6,6 +6,13 @@ import { getNodes, saveNodes } from "./lib/nodeManager"
 import { readProjectFolders } from "./lib/projectIndex"
 import { addReflection } from "./lib/reflectionManager"
 import { LearningNode } from "./models/LearningNode"
+import { getLearningNodes } from "./lib/learningIndex"
+
+export async function loadLearningNodesFromFiles(): Promise<
+  Awaited<ReturnType<typeof getLearningNodes>>
+> {
+  return getLearningNodes()
+}
 
 export async function loadProjectFolders(): Promise<string[]> {
   return readProjectFolders()

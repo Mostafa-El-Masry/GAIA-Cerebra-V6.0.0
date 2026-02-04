@@ -5,7 +5,7 @@ import "reactflow/dist/style.css"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { loadLearningNodes } from "../actions"
+import { loadLearningNodes, loadLearningNodesFromFiles } from "../actions"
 import { loadSkills } from "../lib/skillManager"
 import { loadLessons } from "../lib/lessonManager"
 import { buildGraph } from "../lib/graphBuilder"
@@ -28,11 +28,14 @@ export default function LearningGraphPage() {
     async function load() {
       setLoading(true)
       try {
-        const learningNodes = await loadLearningNodes()
+        const [learningNodes, fileLessons] = await Promise.all([
+          loadLearningNodes(),
+          loadLearningNodesFromFiles()
+        ])
         const skills = loadSkills()
         const lessons = loadLessons()
 
-        const graph = buildGraph(learningNodes, skills, lessons)
+        const graph = buildGraph(learningNodes, skills, lessons, fileLessons)
         setNodes(graph.graphNodes)
         setEdges(graph.edges)
       } finally {
