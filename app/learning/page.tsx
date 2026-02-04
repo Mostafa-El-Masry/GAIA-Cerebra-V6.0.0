@@ -12,15 +12,19 @@ import {
   updateLearningNodeSkills
 } from "./actions"
 import { loadSkills, saveSkills } from "./lib/skillManager"
+import { loadLessons } from "./lib/lessonManager"
 import type { Skill } from "./models/Skill"
+import type { Lesson } from "./models/Lesson"
 
 import { generateAlignmentSignals } from "./lib/alignment"
+import { generateCoherenceSignals } from "./lib/coherence"
 
 import ViewToggle from "./components/ViewToggle"
 import ListView from "./components/ListView"
 import CardView from "./components/CardView"
 import TruthPanel from "./components/TruthPanel"
 import AlignmentPanel from "./components/AlignmentPanel"
+import CoherencePanel from "./components/CoherencePanel"
 
 const FOLDER_NODE_PREFIX = "folder-"
 
@@ -51,11 +55,15 @@ export default function LearningPage() {
   >([])
   const [folders, setFolders] = useState<string[]>([])
   const [view, setView] = useState<"list" | "cards">("list")
+  const [skills, setSkills] = useState<Skill[]>([])
+  const [lessons, setLessons] = useState<Lesson[]>([])
 
   useEffect(() => {
     loadLearningNodes().then(setNodes)
     loadProjectsFromPublicFolder().then(setFolderProjects)
     loadProjectFolders().then(setFolders)
+    setSkills(loadSkills())
+    setLessons(loadLessons())
   }, [])
 
   const displayNodes = useMemo(() => {
@@ -71,6 +79,11 @@ export default function LearningPage() {
   const alignmentSignals = useMemo(
     () => generateAlignmentSignals(nodes, folders),
     [nodes, folders]
+  )
+
+  const coherenceSignals = useMemo(
+    () => generateCoherenceSignals(nodes, skills, lessons),
+    [nodes, skills, lessons]
   )
 
   async function onStatusChange(
@@ -112,9 +125,10 @@ export default function LearningPage() {
       level: 1,
       lessons: [],
     }
-    const skills = loadSkills()
-    saveSkills([...skills, newSkill])
-    const newSkills = [...(node.skills || []), newSkill.id]
+    const currentSkills = loadSkills()
+    saveSkills([...currentSkills, newSkill])
+    setSkills(loadSkills())
+    const newSkills = [...(node.skills ?? []), newSkill.id]
     await updateLearningNodeSkills(nodeId, newSkills)
     setNodes((prev) =>
       prev.map((n) => (n.id === nodeId ? { ...n, skills: newSkills } : n))
@@ -128,6 +142,8 @@ export default function LearningPage() {
       <TruthPanel nodes={nodes} folders={folders} />
 
       <AlignmentPanel signals={alignmentSignals} />
+
+      <CoherencePanel signals={coherenceSignals} />
 
       <ViewToggle view={view} onChange={setView} />
 

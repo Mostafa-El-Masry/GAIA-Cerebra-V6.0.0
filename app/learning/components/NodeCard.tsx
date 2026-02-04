@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+import Link from "next/link"
 import { LearningNode } from "../models/LearningNode"
 import { suggestSkills } from "../lib/suggestions"
 import ReflectionPanel from "./ReflectionPanel"
@@ -22,40 +24,53 @@ export default function NodeCard({
   onAddReflection?: (text: string) => void
   onAcceptSkill?: (title: string) => void
 }) {
-  const previewSrc = node.projectPath
-    ? `${encodeURI(node.projectPath)}/preview.png`
-    : null
   const projectUrl = node.projectPath
     ? `${encodeURI(node.projectPath)}/index.html`
     : null
+  const [showPreview, setShowPreview] = useState(false)
 
   return (
     <div className="border rounded overflow-hidden">
-      {previewSrc && (
-        <img
-          src={previewSrc}
-          alt={node.title}
-          className="w-full h-32 object-cover"
-          onError={e => {
-            ;(e.currentTarget as HTMLImageElement).style.display = "none"
-          }}
-        />
-      )}
-
       <div className="p-3 space-y-2">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <h3 className="font-semibold">{node.title}</h3>
-          {projectUrl && (
-            <a
-              href={projectUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline shrink-0"
-            >
-              Open
-            </a>
+          {projectUrl && node.projectPath && (
+            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setShowPreview((v) => !v)}
+                className="text-sm border rounded px-2 py-1 hover:bg-black/5"
+              >
+                {showPreview ? "Hide preview" : "Preview"}
+              </button>
+              <Link
+                href={`/learning/preview?path=${encodeURIComponent(node.projectPath)}`}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                View page
+              </Link>
+              <a
+                href={projectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Open in new tab
+              </a>
+            </div>
           )}
         </div>
+
+        {projectUrl && showPreview && (
+          <div className="rounded border bg-white overflow-hidden">
+            <iframe
+              src={projectUrl}
+              title={`Preview: ${node.title}`}
+              className="w-full h-[280px] border-0"
+              sandbox="allow-scripts"
+            />
+          </div>
+        )}
 
         <div className="flex gap-2 flex-wrap text-sm">
           <select
