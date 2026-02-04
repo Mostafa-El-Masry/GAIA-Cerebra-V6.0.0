@@ -33,6 +33,7 @@ export const DEFAULT_PLAN_DEFINITIONS: WealthLevelDefinition[] = [
     description: `Income: 1,000 EGP
 Savings: 50,000 EGP
 Active Project: 100 JavaScript Projects`,
+    project: "100 JavaScript Projects",
     survivability: "❌ Suffocating",
     allowedEnrichment: "0%",
     calendarsUnlocked: "None",
@@ -47,6 +48,7 @@ Active Project: 100 JavaScript Projects`,
     description: `Income: 2,000 EGP
 Savings: 120,000 EGP
 Active Project: Inventory Management System`,
+    project: "Inventory Management System",
     survivability: "❌ Suffocating",
     allowedEnrichment: "5%",
     calendarsUnlocked: "Food & Insulin",
@@ -61,6 +63,7 @@ Active Project: Inventory Management System`,
     description: `Income: 4,000 EGP
 Savings: 250,000 EGP
 Active Project: HR System`,
+    project: "HR System",
     survivability: "❌ Unsafe",
     allowedEnrichment: "10%",
     calendarsUnlocked: "Learning",
@@ -75,6 +78,7 @@ Active Project: HR System`,
     description: `Income: 8,000 EGP
 Savings: 400,000 EGP
 Active Project: BOS / POS System`,
+    project: "BOS / POS System",
     survivability: "⚠️ Near survival",
     allowedEnrichment: "15%",
     calendarsUnlocked: "Workout",
@@ -89,6 +93,7 @@ Active Project: BOS / POS System`,
     description: `Income: 16,000 EGP
 Savings: 700,000 EGP
 Active Project: Management System`,
+    project: "Management System",
     survivability: "✅ Surviving",
     allowedEnrichment: "20%",
     calendarsUnlocked: "Sleep & Recovery",
@@ -103,6 +108,7 @@ Active Project: Management System`,
     description: `Income: 32,000 EGP
 Savings: 1,200,000 EGP
 Active Project: Budgeting & Forecasting System`,
+    project: "Budgeting & Forecasting System",
     survivability: "🌱 Begin to enjoy",
     allowedEnrichment: "30%",
     calendarsUnlocked: "Mental Health",
@@ -117,6 +123,7 @@ Active Project: Budgeting & Forecasting System`,
     description: `Income: 64,000 EGP
 Savings: 2,500,000 EGP
 Active Project: Cashflow & Treasury System`,
+    project: "Cashflow & Treasury System",
     survivability: "✅ Comfortable",
     allowedEnrichment: "40%",
     calendarsUnlocked: "Reading & Deep Thinking",
@@ -131,6 +138,7 @@ Active Project: Cashflow & Treasury System`,
     description: `Income: 128,000 EGP
 Savings: 5,000,000 EGP
 Active Project: Assets & Depreciation System`,
+    project: "Assets & Depreciation System",
     survivability: "🟢 Very secure",
     allowedEnrichment: "50%",
     calendarsUnlocked: "Relationships",
@@ -145,6 +153,7 @@ Active Project: Assets & Depreciation System`,
     description: `Income: 256,000 EGP
 Savings: 10,000,000 EGP
 Active Project: Compliance & Audit System`,
+    project: "Compliance & Audit System",
     survivability: "🟢 Abundant",
     allowedEnrichment: "55%",
     calendarsUnlocked: "Purpose & Meaning",
@@ -159,6 +168,7 @@ Active Project: Compliance & Audit System`,
     description: `Income: 512,000 EGP
 Savings: 20,000,000+ EGP
 Active Project: Reporting & Intelligence System`,
+    project: "Reporting & Intelligence System",
     survivability: "🟢 Untouchable",
     allowedEnrichment: "60%",
     calendarsUnlocked: "Legacy & Creation",
@@ -244,6 +254,10 @@ function mergePlanDefinitions(
         typeof override.description === "string" && override.description.trim()
           ? override.description
           : def.description,
+      project:
+        typeof override.project === "string" && override.project.trim()
+          ? override.project
+          : def.project,
       minSavings: normalizeNumber(override.minSavings, def.minSavings ?? 0),
       minMonthlyRevenue: normalizeNumber(
         override.minMonthlyRevenue,

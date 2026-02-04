@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import type {
   WealthOverview,
   WealthState,
@@ -77,6 +77,64 @@ function getPlanProgress(
   const s = savingsTarget != null && savingsTarget > 0 ? Math.min(1, Math.max(0, totalSavings / savingsTarget)) : 1;
   const r = revenueTarget != null && revenueTarget > 0 ? Math.min(1, Math.max(0, monthlyRevenue / revenueTarget)) : 1;
   return Math.min(s, r);
+}
+
+function PhaseProgressBarOverview({
+  progress,
+  completed,
+  remainingSavingsEgp,
+  remainingRevenueEgp,
+}: {
+  progress: number;
+  completed?: boolean;
+  remainingSavingsEgp?: number | null;
+  remainingRevenueEgp?: number | null;
+}) {
+  const [mounted, setMounted] = useState(false);
+  const once = useRef(false);
+  useEffect(() => {
+    if (once.current) return;
+    const t = setTimeout(() => {
+      once.current = true;
+      setMounted(true);
+    }, 150);
+    return () => clearTimeout(t);
+  }, []);
+  const pct = Math.min(100, Math.max(0, progress * 100));
+  const width = mounted ? pct : 0;
+  const saveRem = remainingSavingsEgp != null && Number.isFinite(remainingSavingsEgp) && remainingSavingsEgp > 0 ? remainingSavingsEgp : null;
+  const revRem = remainingRevenueEgp != null && Number.isFinite(remainingRevenueEgp) && remainingRevenueEgp > 0 ? remainingRevenueEgp : null;
+  const remainingLabel = completed
+    ? "Milestones completed"
+    : saveRem != null
+      ? `${formatNumForPlan(saveRem)} EGP to save`
+      : revRem != null
+        ? `${formatNumForPlan(revRem)} EGP revenue remaining`
+        : "Toward phase milestones";
+  return (
+    <div className="w-full mt-3" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+      <div className="h-10 w-full rounded-lg bg-[var(--gaia-ink-faint)] overflow-hidden relative flex items-center">
+        <div
+          className="absolute inset-y-0 left-0 rounded-lg transition-[width] duration-700 ease-out"
+          style={{
+            width: `${width}%`,
+            background: completed
+              ? "linear-gradient(90deg, var(--gaia-positive) 0%, var(--gaia-positive) 100%)"
+              : "linear-gradient(90deg, var(--gaia-accent, #3b82f6) 0%, var(--gaia-accent, #60a5fa) 100%)",
+            boxShadow: completed ? "0 0 8px var(--gaia-positive)" : "none",
+          }}
+        />
+        <div className="relative z-10 w-full flex flex-wrap items-center justify-center gap-x-4 gap-y-0.5 px-3 py-1.5 text-center">
+          <span className="text-sm font-bold tabular-nums text-[var(--gaia-text-strong)] drop-shadow-sm">
+            {Math.round(pct)}%
+          </span>
+          <span className={`text-xs font-medium ${completed ? "text-[var(--gaia-text-strong)]" : "text-[var(--gaia-text-default)]"}`}>
+            {remainingLabel}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function WealthAwakeningClientPage() {
@@ -324,6 +382,39 @@ export default function WealthAwakeningClientPage() {
         <p className="text-base font-semibold text-[var(--gaia-text-strong)]">
           {currentPhaseData.title}
         </p>
+        {currentPhaseData.planTarget?.project && (
+          <p className="mt-1.5 text-sm text-[var(--gaia-text-default)]">
+            Project: {currentPhaseData.planTarget.project}
+          </p>
+        )}
+        {currentPlan && (
+          <PhaseProgressBarOverview
+            progress={getPlanProgress(
+              currentPlan,
+              levelsSnapshot?.totalSavings ?? 0,
+              levelsSnapshot?.monthlyPassiveIncome ?? 0,
+            )}
+            completed={
+              currentPhaseData.isFinalPhase ||
+              (levelsSnapshot?.nextLevelId === null) ||
+              getPlanProgress(
+                currentPlan,
+                levelsSnapshot?.totalSavings ?? 0,
+                levelsSnapshot?.monthlyPassiveIncome ?? 0,
+              ) >= 1
+            }
+            remainingSavingsEgp={
+              currentPlan?.minSavings != null && levelsSnapshot?.totalSavings != null
+                ? Math.max(0, currentPlan.minSavings - levelsSnapshot.totalSavings)
+                : null
+            }
+            remainingRevenueEgp={
+              currentPlan?.minMonthlyRevenue != null && levelsSnapshot?.monthlyPassiveIncome != null
+                ? Math.max(0, currentPlan.minMonthlyRevenue - levelsSnapshot.monthlyPassiveIncome)
+                : null
+            }
+          />
+        )}
         <div className="mt-3 mb-6">
           {currentPhaseData.isFinalPhase ? (
             <p className="text-sm font-medium text-[var(--gaia-text-strong)]">
@@ -348,6 +439,11 @@ export default function WealthAwakeningClientPage() {
                 <p className="text-sm font-medium text-[var(--gaia-text-strong)]">
                   PLAN {getPlanLetter(currentPhaseData.condition)} — {currentPhaseData.condition.shortLabel}
                 </p>
+                {currentPhaseData.condition.project && (
+                  <p className="mt-1.5 text-sm text-[var(--gaia-text-default)]">
+                    Project: {currentPhaseData.condition.project}
+                  </p>
+                )}
                 <dl className="mt-3 space-y-1 text-sm text-[var(--gaia-text-default)]">
                   {currentPhaseData.condition.survivability != null && (
                     <div>Survivability: {currentPhaseData.condition.survivability}</div>
@@ -378,6 +474,11 @@ export default function WealthAwakeningClientPage() {
                       PLAN {getPlanLetter(currentPhaseData.planTarget)} —{" "}
                       {currentPhaseData.planTarget.shortLabel}
                     </p>
+                    {currentPhaseData.planTarget.project && (
+                      <p className="mt-1.5 text-sm text-[var(--gaia-text-default)]">
+                        Project: {currentPhaseData.planTarget.project}
+                      </p>
+                    )}
                     <dl className="mt-3 space-y-1 text-sm text-[var(--gaia-text-default)]">
                       {currentPhaseData.planTarget.minSavings != null && (
                         <div>Min savings: {formatNumForPlan(currentPhaseData.planTarget.minSavings)} EGP</div>

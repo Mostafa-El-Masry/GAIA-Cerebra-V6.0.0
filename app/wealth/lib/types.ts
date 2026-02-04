@@ -101,6 +101,8 @@ export interface WealthLevelDefinition {
   minSavings?: number;
   minMonthlyRevenue?: number;
   description: string;
+  /** Active project for this plan (e.g. "100 JavaScript Projects", "Inventory Management System"). */
+  project?: string;
   survivability?: string;
   allowedEnrichment?: string;
   calendarsUnlocked?: string;

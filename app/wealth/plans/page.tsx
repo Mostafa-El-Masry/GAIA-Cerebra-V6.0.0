@@ -482,6 +482,7 @@ export default function WealthPlansPage() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className="font-semibold text-[var(--gaia-text-strong)]">{plan.shortLabel}</span>
                   <div className="flex gap-4 text-sm text-[var(--gaia-text-muted)]">
+                    {plan.project && <span>Project: {plan.project}</span>}
                     <span>Savings: {formatCurrency(plan.minSavings ?? 0, planCurrency)}</span>
                     <span>Revenue: {formatCurrency(plan.minMonthlyRevenue ?? 0, planCurrency)}</span>
                   </div>
@@ -581,6 +582,12 @@ export default function WealthPlansPage() {
                             </span>
                           )}
                         </div>
+                        {(plan.project && (
+                          <span className="w-full sm:w-auto flex items-baseline gap-1.5 text-sm">
+                            <span className="text-[var(--gaia-text-muted)] font-medium">Project</span>
+                            <span className="font-semibold text-[var(--gaia-text-strong)]">{plan.project}</span>
+                          </span>
+                        )) || null}
                         <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
                           <span className="flex items-baseline gap-1.5">
                             <span className="text-[var(--gaia-text-muted)] font-medium">Savings</span>

@@ -1,12 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { getPlanDefinitions } from "../lib/levels";
+import { getPlanDefinitions, buildLevelsSnapshot } from "../lib/levels";
+import { loadWealthStateWithRemote } from "../lib/wealthStore";
+import { buildWealthOverview, getTodayInKuwait } from "../lib/summary";
+import { getExchangeRate } from "../lib/exchangeRate";
 import type { WealthLevelDefinition } from "../lib/types";
+import type { WealthLevelsSnapshot } from "../lib/types";
 
 const surface = "wealth-surface text-[var(--gaia-text-default)]";
-
+const PLAN_CURRENCY = "EGP";
 const PLAN_LETTERS = "JIHGFEDCBA"; // order 1 -> J, 2 -> I, ... 10 -> A
 
 function getPlanLetter(plan: WealthLevelDefinition): string {
@@ -20,6 +24,98 @@ function formatCurrency(value: number): string {
     style: "decimal",
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+/** Progress 0..1 toward a plan's milestones (savings + revenue). */
+function getPhaseProgress(
+  phase: PhaseData,
+  totalSavings: number,
+  monthlyRevenue: number,
+  snapshot: WealthLevelsSnapshot | null,
+): number {
+  if (!phase.planTarget) {
+    if (phase.isFinalPhase && snapshot) {
+      const allAchieved = snapshot.nextLevelId === null;
+      return allAchieved ? 1 : 0;
+    }
+    return 0;
+  }
+  const currentPlan = snapshot?.levels.find(
+    (l) => l.id === snapshot.currentLevelId,
+  );
+  const currentOrder = currentPlan?.order ?? 0;
+  if (phase.planTarget.order < currentOrder) return 1;
+  const savingsTarget = phase.planTarget.minSavings ?? 0;
+  const revenueTarget = phase.planTarget.minMonthlyRevenue ?? 0;
+  if (savingsTarget <= 0 && revenueTarget <= 0) return 0;
+  const savingsProgress =
+    savingsTarget > 0 ? Math.min(1, totalSavings / savingsTarget) : 1;
+  const revenueProgress =
+    revenueTarget > 0 ? Math.min(1, monthlyRevenue / revenueTarget) : 1;
+  return Math.min(savingsProgress, revenueProgress);
+}
+
+function formatNumEgp(value: number): string {
+  if (!Number.isFinite(value)) return "—";
+  return new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function PhaseProgressBar({
+  progress,
+  completed,
+  remainingSavingsEgp,
+  remainingRevenueEgp,
+  delayMs = 0,
+}: {
+  progress: number;
+  completed?: boolean;
+  remainingSavingsEgp?: number | null;
+  remainingRevenueEgp?: number | null;
+  delayMs?: number;
+}) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), delayMs);
+    return () => clearTimeout(t);
+  }, [delayMs]);
+  const pct = Math.min(100, Math.max(0, progress * 100));
+  const width = mounted ? pct : 0;
+  const saveRem = remainingSavingsEgp != null && Number.isFinite(remainingSavingsEgp) && remainingSavingsEgp > 0 ? remainingSavingsEgp : null;
+  const revRem = remainingRevenueEgp != null && Number.isFinite(remainingRevenueEgp) && remainingRevenueEgp > 0 ? remainingRevenueEgp : null;
+  const remainingLabel = completed
+    ? "Completed"
+    : saveRem != null
+      ? `${formatNumEgp(saveRem)} EGP to save`
+      : revRem != null
+        ? `${formatNumEgp(revRem)} EGP revenue remaining`
+        : "Toward milestones";
+  return (
+    <div className="w-full mt-2" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+      <div className="h-10 w-full rounded-lg bg-[var(--gaia-ink-faint)] overflow-hidden relative flex items-center">
+        <div
+          className="absolute inset-y-0 left-0 rounded-lg transition-[width] duration-700 ease-out"
+          style={{
+            width: `${width}%`,
+            background: completed
+              ? "linear-gradient(90deg, var(--gaia-positive) 0%, var(--gaia-positive) 100%)"
+              : "linear-gradient(90deg, var(--gaia-accent, #3b82f6) 0%, var(--gaia-accent, #60a5fa) 100%)",
+            boxShadow: completed ? "0 0 8px var(--gaia-positive)" : "none",
+          }}
+        />
+        <div className="relative z-10 w-full flex flex-wrap items-center justify-center gap-x-4 gap-y-0.5 px-3 py-1.5 text-center">
+          <span className="text-sm font-bold tabular-nums text-[var(--gaia-text-strong)] drop-shadow-sm">
+            {Math.round(pct)}%
+          </span>
+          <span className={`text-xs font-medium ${completed ? "text-[var(--gaia-text-strong)]" : "text-[var(--gaia-text-default)]"}`}>
+            {remainingLabel}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 type PhaseData = {
@@ -67,6 +163,32 @@ function buildPhases(plans: WealthLevelDefinition[]): PhaseData[] {
 export default function PhasesPage() {
   const planDefinitions = useMemo(() => getPlanDefinitions(), []);
   const phases = useMemo(() => buildPhases(planDefinitions), [planDefinitions]);
+  const [snapshot, setSnapshot] = useState<WealthLevelsSnapshot | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const [state, fxInfo] = await Promise.all([
+        loadWealthStateWithRemote(),
+        getExchangeRate(),
+      ]);
+      if (cancelled) return;
+      const today = getTodayInKuwait();
+      const overview = buildWealthOverview(state, today);
+      const snap = buildLevelsSnapshot(overview, {
+        planCurrency: PLAN_CURRENCY,
+        fxRate: fxInfo?.rate ?? undefined,
+      });
+      setSnapshot(snap);
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const totalSavings = snapshot?.totalSavings ?? 0;
+  const monthlyRevenue = snapshot?.monthlyPassiveIncome ?? 0;
 
   const [expandedPhases, setExpandedPhases] = useState<boolean[]>(
     new Array(11).fill(false),
@@ -105,16 +227,44 @@ export default function PhasesPage() {
               <button
                 type="button"
                 onClick={() => togglePhase(index)}
-                className="w-full text-left px-4 py-4 transition-colors hover:bg-[var(--gaia-surface-soft)] flex items-center gap-2 sm:px-5"
+                className="w-full text-left px-4 py-4 transition-colors hover:bg-[var(--gaia-surface-soft)] flex flex-col items-stretch gap-0 sm:px-5"
               >
-                {expandedPhases[index] ? (
-                  <ChevronDown className="w-5 h-5 text-[var(--gaia-text-muted)] shrink-0" />
-                ) : (
-                  <ChevronRight className="w-5 h-5 text-[var(--gaia-text-muted)] shrink-0" />
-                )}
-                <span className="text-base font-semibold text-[var(--gaia-text-strong)]">
-                  {phase.title}
-                </span>
+                <div className="flex items-center gap-2">
+                  {expandedPhases[index] ? (
+                    <ChevronDown className="w-5 h-5 text-[var(--gaia-text-muted)] shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-[var(--gaia-text-muted)] shrink-0" />
+                  )}
+                  <span className="text-base font-semibold text-[var(--gaia-text-strong)]">
+                    {phase.title}
+                  </span>
+                </div>
+                <PhaseProgressBar
+                  progress={getPhaseProgress(
+                    phase,
+                    totalSavings,
+                    monthlyRevenue,
+                    snapshot,
+                  )}
+                  completed={
+                    (phase.planTarget &&
+                      (snapshot?.levels.find(
+                        (l) => l.id === snapshot.currentLevelId,
+                      )?.order ?? 0) > phase.planTarget.order) ||
+                    (phase.isFinalPhase && snapshot?.nextLevelId === null)
+                  }
+                  remainingSavingsEgp={
+                    phase.planTarget?.minSavings != null
+                      ? Math.max(0, phase.planTarget.minSavings - totalSavings)
+                      : null
+                  }
+                  remainingRevenueEgp={
+                    phase.planTarget?.minMonthlyRevenue != null
+                      ? Math.max(0, phase.planTarget.minMonthlyRevenue - monthlyRevenue)
+                      : null
+                  }
+                  delayMs={index * 80}
+                />
               </button>
               {expandedPhases[index] && (
                 <div className="px-4 pb-5 pt-4 sm:px-5 md:px-6">
@@ -130,6 +280,11 @@ export default function PhasesPage() {
                             PLAN {getPlanLetter(phase.planTarget)} —{" "}
                             {phase.planTarget.shortLabel}
                           </p>
+                          {phase.planTarget.project && (
+                            <p className="mt-1 text-sm text-[var(--gaia-text-default)]">
+                              Project: {phase.planTarget.project}
+                            </p>
+                          )}
                           <dl className="mt-2 space-y-1 text-sm text-[var(--gaia-text-default)]">
                             {phase.planTarget.minSavings != null && (
                               <div>
@@ -172,6 +327,11 @@ export default function PhasesPage() {
                             PLAN {getPlanLetter(phase.condition)} —{" "}
                             {phase.condition.shortLabel}
                           </p>
+                          {phase.condition.project && (
+                            <p className="mt-1 text-sm text-[var(--gaia-text-default)]">
+                              Project: {phase.condition.project}
+                            </p>
+                          )}
                           <dl className="mt-2 space-y-1 text-sm text-[var(--gaia-text-default)]">
                             {phase.condition.survivability != null && (
                               <div>Survivability: {phase.condition.survivability}</div>
