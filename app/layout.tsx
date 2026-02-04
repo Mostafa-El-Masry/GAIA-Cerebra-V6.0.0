@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { DesignProvider } from "./DesignSystem/context/DesignProvider";
 import { DEFAULT_THEME, THEMES, type Theme } from "./DesignSystem/theme";
 import { cookies, headers } from "next/headers";
+import RootShell from "./components/RootShell";
 
 async function getInitialTheme(): Promise<Theme> {
   const SUPPORTED_THEMES = new Set<string>(THEMES as readonly string[]);
@@ -60,7 +61,9 @@ export default async function RootLayout({
         className="overflow-x-hidden gaia-scene-bg"
         suppressHydrationWarning
       >
-        <DesignProvider>{children}</DesignProvider>
+        <DesignProvider>
+        <RootShell>{children}</RootShell>
+      </DesignProvider>
       </body>
     </html>
   );
