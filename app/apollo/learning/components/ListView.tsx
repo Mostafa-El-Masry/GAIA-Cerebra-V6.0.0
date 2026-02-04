@@ -36,7 +36,7 @@ export default function ListView({
     <div className="space-y-6">
       {Object.entries(grouped).map(([group, groupNodes]) => (
         <div key={group}>
-          <h2 className="font-semibold mb-2">{group}</h2>
+          <h2 className="font-semibold mb-2 text-[var(--gaia-text-strong)]">{group}</h2>
           <div className="space-y-2">
             {groupNodes
               .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))

@@ -30,22 +30,22 @@ export default function NodeCard({
   const [showPreview, setShowPreview] = useState(false)
 
   return (
-    <div className="border rounded overflow-hidden">
+    <div className="rounded overflow-hidden border border-[var(--gaia-border)] bg-[var(--gaia-surface)]">
       <div className="p-3 space-y-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <h3 className="font-semibold">{node.title}</h3>
+          <h3 className="font-semibold text-[var(--gaia-text-strong)]">{node.title}</h3>
           {projectUrl && node.projectPath && (
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
               <button
                 type="button"
                 onClick={() => setShowPreview((v) => !v)}
-                className="text-sm border rounded px-2 py-1 hover:bg-black/5"
+                className="text-sm rounded border border-[var(--gaia-border)] px-2 py-1 text-[var(--gaia-text-default)] hover:bg-[var(--gaia-surface-soft)]"
               >
                 {showPreview ? "Hide preview" : "Preview"}
               </button>
               <Link
                 href={`/apollo/learning/preview?path=${encodeURIComponent(node.projectPath)}`}
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-[var(--gaia-accent)] hover:underline"
               >
                 View page
               </Link>
@@ -53,7 +53,7 @@ export default function NodeCard({
                 href={projectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-[var(--gaia-accent)] hover:underline"
               >
                 Open in new tab
               </a>
@@ -62,7 +62,7 @@ export default function NodeCard({
         </div>
 
         {projectUrl && showPreview && (
-          <div className="rounded border bg-white overflow-hidden">
+          <div className="overflow-hidden rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)]">
             <iframe
               src={projectUrl}
               title={`Preview: ${node.title}`}
@@ -81,7 +81,7 @@ export default function NodeCard({
                 e.target.value as LearningNode["status"]
               )
             }
-            className="border rounded px-2 py-1"
+            className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-2 py-1 text-[var(--gaia-text-default)]"
           >
             <option value="not started">Not started</option>
             <option value="in progress">In progress</option>
@@ -94,7 +94,7 @@ export default function NodeCard({
             onChange={e =>
               onMetaChange(node.id, "track", e.target.value)
             }
-            className="border rounded px-2 py-1 w-28"
+            className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-2 py-1 w-28 text-[var(--gaia-text-default)]"
           />
 
           <input
@@ -103,7 +103,7 @@ export default function NodeCard({
             onChange={e =>
               onMetaChange(node.id, "category", e.target.value)
             }
-            className="border rounded px-2 py-1 w-28"
+            className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-2 py-1 w-28 text-[var(--gaia-text-default)]"
           />
 
           <input
@@ -117,7 +117,7 @@ export default function NodeCard({
                 Number(e.target.value)
               )
             }
-            className="border rounded px-2 py-1 w-20"
+            className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-2 py-1 w-20 text-[var(--gaia-text-default)]"
           />
 
           <input
@@ -126,7 +126,7 @@ export default function NodeCard({
             onChange={e =>
               onMetaChange(node.id, "projectPath", e.target.value)
             }
-            className="border rounded px-2 py-1 w-56"
+            className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-2 py-1 w-56 text-[var(--gaia-text-default)]"
           />
         </div>
 

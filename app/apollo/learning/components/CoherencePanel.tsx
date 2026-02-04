@@ -9,15 +9,15 @@ export default function CoherencePanel({
 }) {
   if (signals.length === 0) {
     return (
-      <div className="border rounded p-4 text-sm text-green-700">
+      <div className="rounded border border-[var(--gaia-positive-border)] bg-[var(--gaia-positive-bg)] p-4 text-sm text-[var(--gaia-positive)]">
         All systems coherent.
       </div>
     )
   }
 
   return (
-    <div className="border rounded p-4 space-y-2 text-sm">
-      <h2 className="font-semibold">
+    <div className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-4 space-y-2 text-sm text-[var(--gaia-text-default)]">
+      <h2 className="font-semibold text-[var(--gaia-text-strong)]">
         Coherence Signals ({signals.length})
       </h2>
 

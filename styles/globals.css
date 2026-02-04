@@ -659,3 +659,40 @@ html[data-theme] textarea::placeholder {
     font-size: 16px !important;
   }
 }
+
+/* Learning graph: GAIA theme for ReactFlow canvas and edges */
+.learning-graph .react-flow__background {
+  background: var(--gaia-surface);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--gaia-border) 25%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+.learning-graph .react-flow__edge path {
+  stroke: var(--gaia-border);
+  stroke-width: 1.5;
+}
+.learning-graph .react-flow__edge.selected path,
+.learning-graph .react-flow__edge:hover path {
+  stroke: var(--gaia-accent);
+}
+.learning-graph .react-flow__controls button {
+  background: var(--gaia-surface) !important;
+  color: var(--gaia-text-default) !important;
+  border-color: var(--gaia-border) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--gaia-foreground) 8%, transparent);
+}
+.learning-graph .react-flow__controls button:hover {
+  background: var(--gaia-surface-soft) !important;
+}
+.learning-graph .react-flow__minimap {
+  background: var(--gaia-surface-soft) !important;
+  border: 1px solid var(--gaia-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.learning-graph .react-flow__handle {
+  background: var(--gaia-surface) !important;
+  border-color: var(--gaia-border) !important;
+}

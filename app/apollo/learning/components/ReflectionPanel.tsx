@@ -13,11 +13,11 @@ export default function ReflectionPanel({
   const [text, setText] = useState("")
 
   return (
-    <div className="border rounded p-3 space-y-3 text-sm">
-      <h3 className="font-medium">Reflections</h3>
+    <div className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-3 space-y-3 text-sm text-[var(--gaia-text-default)]">
+      <h3 className="font-medium text-[var(--gaia-text-strong)]">Reflections</h3>
 
       <textarea
-        className="w-full border rounded p-2"
+        className="w-full rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-2 text-[var(--gaia-text-default)]"
         rows={3}
         value={text}
         onChange={e => setText(e.target.value)}
@@ -25,7 +25,7 @@ export default function ReflectionPanel({
       />
 
       <button
-        className="border px-3 py-1 rounded"
+        className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-3 py-1 text-[var(--gaia-text-strong)] hover:bg-[var(--gaia-surface-soft)]"
         onClick={() => {
           if (!text.trim()) return
           onAdd(text)
@@ -38,8 +38,8 @@ export default function ReflectionPanel({
       {reflections.length > 0 && (
         <ul className="space-y-2">
           {reflections.map(r => (
-            <li key={r.id} className="border rounded p-2">
-              <div className="text-xs opacity-60">
+            <li key={r.id} className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-2">
+              <div className="text-xs text-[var(--gaia-text-muted)]">
                 {new Date(r.date).toLocaleString()}
               </div>
               <div>{r.text}</div>

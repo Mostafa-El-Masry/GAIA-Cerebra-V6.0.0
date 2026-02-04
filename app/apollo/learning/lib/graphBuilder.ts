@@ -5,6 +5,22 @@ import type { LearningNode as FileLearningNode } from "./learningIndex"
 
 type NodeType = "project" | "skill" | "lesson"
 
+const PROJECT_X = 0
+const SKILL_X = 420
+const LESSON_X = 880
+const ROW_HEIGHT = 72
+const GROUP_GAP = 96
+
+function groupBy<T>(arr: T[], key: (t: T) => string): Map<string, T[]> {
+  const map = new Map<string, T[]>()
+  arr.forEach((item) => {
+    const k = key(item)
+    if (!map.has(k)) map.set(k, [])
+    map.get(k)!.push(item)
+  })
+  return map
+}
+
 export function buildGraph(
   nodes: LearningNode[],
   skills: Skill[],
@@ -18,38 +34,51 @@ export function buildGraph(
     type?: string
   }[] = []
   const edges: { id: string; source: string; target: string }[] = []
+  const nodeIds = new Set<string>()
 
-  const PROJECT_X = 0
-  const SKILL_X = 300
-  const LESSON_X = 600
-  const ROW_HEIGHT = 120
-
-  nodes.forEach((n, i) => {
+  function addNode(
+    id: string,
+    type: NodeType,
+    label: string,
+    x: number,
+    y: number
+  ) {
+    if (nodeIds.has(id)) return
+    nodeIds.add(id)
     graphNodes.push({
-      id: `project-${n.id}`,
-      type: "project",
-      data: { label: n.title, type: "project" },
-      position: { x: PROJECT_X, y: i * ROW_HEIGHT }
+      id,
+      type,
+      data: { label, type },
+      position: { x, y }
     })
+  }
 
-    n.skills?.forEach(skillId => {
-      edges.push({
-        id: `p-${n.id}-s-${skillId}`,
-        source: `project-${n.id}`,
-        target: `skill-${skillId}`
+  // Projects: group by track/category for clearer layout
+  const projectGroups = groupBy(
+    nodes,
+    (n) => `${n.track ?? "General"}|${n.category ?? "Uncategorized"}`
+  )
+  let projectY = 0
+  projectGroups.forEach((group) => {
+    const sorted = [...group].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    sorted.forEach((n) => {
+      addNode(`project-${n.id}`, "project", n.title, PROJECT_X, projectY)
+      n.skills?.forEach((skillId) => {
+        edges.push({
+          id: `p-${n.id}-s-${skillId}`,
+          source: `project-${n.id}`,
+          target: `skill-${skillId}`
+        })
       })
+      projectY += ROW_HEIGHT
     })
+    projectY += GROUP_GAP
   })
 
+  // Manager skills + lessons
   skills.forEach((s, i) => {
-    graphNodes.push({
-      id: `skill-${s.id}`,
-      type: "skill",
-      data: { label: s.title, type: "skill" },
-      position: { x: SKILL_X, y: i * ROW_HEIGHT }
-    })
-
-    s.lessons?.forEach(lessonId => {
+    addNode(`skill-${s.id}`, "skill", s.title, SKILL_X, i * ROW_HEIGHT)
+    s.lessons?.forEach((lessonId) => {
       edges.push({
         id: `s-${s.id}-l-${lessonId}`,
         source: `skill-${s.id}`,
@@ -59,42 +88,42 @@ export function buildGraph(
   })
 
   lessons.forEach((l, i) => {
-    graphNodes.push({
-      id: `lesson-${l.id}`,
-      type: "lesson",
-      data: { label: l.title, type: "lesson" },
-      position: { x: LESSON_X, y: i * ROW_HEIGHT }
-    })
+    addNode(`lesson-${l.id}`, "lesson", l.title, LESSON_X, i * ROW_HEIGHT)
   })
 
   const learningNodes = fileLessons ?? []
+  const skillCount = skills.length
+  const lessonCount = lessons.length
 
   learningNodes
     .filter((n): n is FileLearningNode => n.type === "skill")
     .forEach((skill, index) => {
-      graphNodes.push({
-        id: `skill-${skill.id}`,
-        type: "skill",
-        data: { label: skill.title, type: "skill" },
-        position: {
-          x: SKILL_X,
-          y: (skills.length + index) * 140
-        }
+      addNode(
+        `skill-${skill.id}`,
+        "skill",
+        skill.title,
+        SKILL_X,
+        (skillCount + index) * ROW_HEIGHT
+      )
+      skill.lessons?.forEach((lessonId) => {
+        edges.push({
+          id: `s-${skill.id}-l-${lessonId}`,
+          source: `skill-${skill.id}`,
+          target: `lesson-${lessonId}`
+        })
       })
     })
 
   learningNodes
     .filter((n): n is FileLearningNode => n.type === "lesson")
     .forEach((lesson, index) => {
-      graphNodes.push({
-        id: `lesson-${lesson.id}`,
-        type: "lesson",
-        data: { label: lesson.title, type: "lesson" },
-        position: {
-          x: LESSON_X,
-          y: (lessons.length + index) * 120
-        }
-      })
+      addNode(
+        `lesson-${lesson.id}`,
+        "lesson",
+        lesson.title,
+        LESSON_X,
+        (lessonCount + index) * ROW_HEIGHT
+      )
     })
 
   return { graphNodes, edges }

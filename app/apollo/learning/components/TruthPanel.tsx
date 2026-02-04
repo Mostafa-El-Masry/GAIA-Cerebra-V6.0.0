@@ -28,8 +28,8 @@ export default function TruthPanel({
   )
 
   return (
-    <div className="border rounded p-4 space-y-4 text-sm">
-      <h2 className="font-semibold">Project Truth Panel</h2>
+    <div className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-4 space-y-4 text-sm text-[var(--gaia-text-default)]">
+      <h2 className="font-semibold text-[var(--gaia-text-strong)]">Project Truth Panel</h2>
 
       <div>
         <strong>Linked Projects:</strong> {linked.length}

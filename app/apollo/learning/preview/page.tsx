@@ -31,11 +31,11 @@ function PreviewContent() {
 
   if (!path) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-        <p className="text-gray-600">No project path provided.</p>
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 wealth-theme bg-[var(--gaia-surface)]">
+        <p className="text-[var(--gaia-text-muted)]">No project path provided.</p>
         <Link
           href="/apollo/learning"
-          className="text-blue-600 hover:underline"
+          className="text-[var(--gaia-accent)] hover:underline"
         >
           Back to Learning
         </Link>
@@ -46,29 +46,29 @@ function PreviewContent() {
   const indexUrl = `${path}/index.html`
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-white z-50">
-      <div className="flex items-center gap-4 px-4 py-2 border-b bg-gray-50 shrink-0">
+    <div className="wealth-theme fixed inset-0 flex flex-col bg-[var(--gaia-surface)] z-50">
+      <div className="flex items-center gap-4 px-4 py-2 border-b border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] shrink-0">
         <Link
           href="/apollo/learning"
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-[var(--gaia-accent)] hover:underline"
         >
           ← Back to Learning
         </Link>
-        <span className="text-sm text-gray-500 truncate flex-1" title={indexUrl}>
+        <span className="text-sm text-[var(--gaia-text-muted)] truncate flex-1" title={indexUrl}>
           {indexUrl}
         </span>
         <a
           href={indexUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-blue-600 hover:underline shrink-0"
+          className="text-sm text-[var(--gaia-accent)] hover:underline shrink-0"
         >
           Open in new tab
         </a>
       </div>
       <div
         ref={containerRef}
-        className="flex-1 min-h-0 overflow-hidden flex items-center justify-center bg-gray-100"
+        className="flex-1 min-h-0 overflow-hidden flex items-center justify-center bg-[var(--gaia-surface-soft)]"
       >
         <div
           style={{
@@ -96,7 +96,7 @@ function PreviewContent() {
 
 export default function LearningPreviewPage() {
   return (
-    <Suspense fallback={<div className="p-4">Loading…</div>}>
+    <Suspense fallback={<div className="p-4 wealth-theme bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">Loading…</div>}>
       <PreviewContent />
     </Suspense>
   )

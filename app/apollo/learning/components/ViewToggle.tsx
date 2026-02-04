@@ -11,8 +11,10 @@ export default function ViewToggle({
     <div className="flex gap-2">
       <button
         onClick={() => onChange("list")}
-        className={`px-3 py-1 border rounded ${
-          view === "list" ? "bg-black text-white" : ""
+        className={`px-3 py-1 border rounded border-[var(--gaia-border)] ${
+          view === "list"
+            ? "bg-[var(--gaia-contrast-bg)] text-[var(--gaia-contrast-text)]"
+            : "bg-[var(--gaia-surface)] text-[var(--gaia-text-default)] hover:bg-[var(--gaia-surface-soft)]"
         }`}
       >
         List View
@@ -20,8 +22,10 @@ export default function ViewToggle({
 
       <button
         onClick={() => onChange("cards")}
-        className={`px-3 py-1 border rounded ${
-          view === "cards" ? "bg-black text-white" : ""
+        className={`px-3 py-1 border rounded border-[var(--gaia-border)] ${
+          view === "cards"
+            ? "bg-[var(--gaia-contrast-bg)] text-[var(--gaia-contrast-text)]"
+            : "bg-[var(--gaia-surface)] text-[var(--gaia-text-default)] hover:bg-[var(--gaia-surface-soft)]"
         }`}
       >
         Card View

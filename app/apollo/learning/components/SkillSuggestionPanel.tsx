@@ -10,13 +10,13 @@ export default function SkillSuggestionPanel({
   if (suggestions.length === 0) return null
 
   return (
-    <div className="border rounded p-3 space-y-2 text-sm">
-      <h3 className="font-medium">Suggested Skills</h3>
+    <div className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-3 space-y-2 text-sm text-[var(--gaia-text-default)]">
+      <h3 className="font-medium text-[var(--gaia-text-strong)]">Suggested Skills</h3>
       {suggestions.map((s) => (
         <div key={s} className="flex justify-between">
           <span>{s}</span>
           <button
-            className="border px-2 rounded"
+            className="rounded border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-2 text-[var(--gaia-text-strong)] hover:bg-[var(--gaia-surface-soft)]"
             onClick={() => onAccept(s)}
           >
             Add

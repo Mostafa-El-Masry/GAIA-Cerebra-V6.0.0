@@ -23,9 +23,7 @@ import { generateCoherenceSignals } from "./lib/coherence"
 import ViewToggle from "./components/ViewToggle"
 import ListView from "./components/ListView"
 import CardView from "./components/CardView"
-import TruthPanel from "./components/TruthPanel"
-import AlignmentPanel from "./components/AlignmentPanel"
-import CoherencePanel from "./components/CoherencePanel"
+import LearningStatusCard from "./components/LearningStatusCard"
 
 const FOLDER_NODE_PREFIX = "folder-"
 
@@ -139,20 +137,21 @@ export default function LearningPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 flex-wrap">
-        <h1 className="text-xl font-bold">Learning Map</h1>
+        <h1 className="text-xl font-bold text-[var(--gaia-text-strong)]">Learning Map</h1>
         <Link
           href="/apollo/learning/graph"
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-[var(--gaia-accent)] hover:underline"
         >
           Graph View
         </Link>
       </div>
 
-      <TruthPanel nodes={nodes} folders={folders} />
-
-      <AlignmentPanel signals={alignmentSignals} />
-
-      <CoherencePanel signals={coherenceSignals} />
+      <LearningStatusCard
+        displayNodes={displayNodes}
+        folderProjectPaths={folderProjects.map((p) => p.path)}
+        alignmentSignals={alignmentSignals}
+        coherenceSignals={coherenceSignals}
+      />
 
       <ViewToggle view={view} onChange={setView} />
 
