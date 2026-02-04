@@ -141,7 +141,7 @@ export default function LearningPage() {
       <div className="flex items-center gap-4 flex-wrap">
         <h1 className="text-xl font-bold">Learning Map</h1>
         <Link
-          href="/learning/graph"
+          href="/apollo/learning/graph"
           className="text-sm text-blue-600 hover:underline"
         >
           Graph View

@@ -34,7 +34,7 @@ function PreviewContent() {
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <p className="text-gray-600">No project path provided.</p>
         <Link
-          href="/learning"
+          href="/apollo/learning"
           className="text-blue-600 hover:underline"
         >
           Back to Learning
@@ -49,7 +49,7 @@ function PreviewContent() {
     <div className="fixed inset-0 flex flex-col bg-white z-50">
       <div className="flex items-center gap-4 px-4 py-2 border-b bg-gray-50 shrink-0">
         <Link
-          href="/learning"
+          href="/apollo/learning"
           className="text-sm text-blue-600 hover:underline"
         >
           ← Back to Learning

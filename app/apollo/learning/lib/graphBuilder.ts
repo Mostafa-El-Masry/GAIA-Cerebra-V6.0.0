@@ -2,20 +2,32 @@ import { LearningNode } from "../models/LearningNode"
 import { Skill } from "../models/Skill"
 import { Lesson } from "../models/Lesson"
 
+type NodeType = "project" | "skill" | "lesson"
+
 export function buildGraph(
   nodes: LearningNode[],
   skills: Skill[],
   lessons: Lesson[]
 ) {
-  const graphNodes: { id: string; data: { label: string }; position: { x: number; y: number }; type?: string }[] = []
+  const graphNodes: {
+    id: string
+    data: { label: string; type: NodeType }
+    position: { x: number; y: number }
+    type?: string
+  }[] = []
   const edges: { id: string; source: string; target: string }[] = []
 
-  nodes.forEach(n => {
+  const PROJECT_X = 0
+  const SKILL_X = 300
+  const LESSON_X = 600
+  const ROW_HEIGHT = 120
+
+  nodes.forEach((n, i) => {
     graphNodes.push({
       id: `project-${n.id}`,
-      data: { label: n.title },
-      position: { x: 0, y: 0 },
-      type: "default"
+      type: "project",
+      data: { label: n.title, type: "project" },
+      position: { x: PROJECT_X, y: i * ROW_HEIGHT }
     })
 
     n.skills?.forEach(skillId => {
@@ -27,11 +39,12 @@ export function buildGraph(
     })
   })
 
-  skills.forEach(s => {
+  skills.forEach((s, i) => {
     graphNodes.push({
       id: `skill-${s.id}`,
-      data: { label: s.title },
-      position: { x: 0, y: 0 }
+      type: "skill",
+      data: { label: s.title, type: "skill" },
+      position: { x: SKILL_X, y: i * ROW_HEIGHT }
     })
 
     s.lessons?.forEach(lessonId => {
@@ -43,11 +56,12 @@ export function buildGraph(
     })
   })
 
-  lessons.forEach(l => {
+  lessons.forEach((l, i) => {
     graphNodes.push({
       id: `lesson-${l.id}`,
-      data: { label: l.title },
-      position: { x: 0, y: 0 }
+      type: "lesson",
+      data: { label: l.title, type: "lesson" },
+      position: { x: LESSON_X, y: i * ROW_HEIGHT }
     })
   })
 

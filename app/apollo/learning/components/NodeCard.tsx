@@ -44,7 +44,7 @@ export default function NodeCard({
                 {showPreview ? "Hide preview" : "Preview"}
               </button>
               <Link
-                href={`/learning/preview?path=${encodeURIComponent(node.projectPath)}`}
+                href={`/apollo/learning/preview?path=${encodeURIComponent(node.projectPath)}`}
                 className="text-sm text-blue-600 hover:underline"
               >
                 View page

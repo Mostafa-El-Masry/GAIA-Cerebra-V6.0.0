@@ -7,7 +7,6 @@ import {
   Clock,
   Heart,
   Lightbulb,
-  BookOpen,
   TrendingUp,
   LayoutDashboard,
   Shield,
@@ -31,7 +30,6 @@ export default function Intro() {
   const right = [
     { href: "/wealth-awakening", label: "Wealth", icon: TrendingUp },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/learning", label: "Learning", icon: BookOpen },
     { href: "/guardian", label: "Guardian", icon: Shield },
     { href: "/settings", label: "Settings", icon: Settings },
   ];
@@ -44,7 +42,6 @@ export default function Intro() {
     Eleuthia: "Creative vault and inspiration",
     Wealth: "Capital and flow",
     Dashboard: "Control room overview",
-    Learning: "Learning nodes and progress",
     Guardian: "Security and monitoring",
     Settings: "Themes and preferences",
     Instagram: "Social media integration",
