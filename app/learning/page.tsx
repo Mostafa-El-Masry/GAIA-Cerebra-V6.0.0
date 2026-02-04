@@ -5,6 +5,7 @@ import { LearningNode } from "./models/LearningNode"
 import {
   loadLearningNodes,
   loadProjectsFromPublicFolder,
+  loadProjectFolders,
   updateLearningNodeStatus,
   updateLearningNodeMeta
 } from "./actions"
@@ -12,6 +13,7 @@ import {
 import ViewToggle from "./components/ViewToggle"
 import ListView from "./components/ListView"
 import CardView from "./components/CardView"
+import TruthPanel from "./components/TruthPanel"
 
 const FOLDER_NODE_PREFIX = "folder-"
 
@@ -40,11 +42,13 @@ export default function LearningPage() {
   const [folderProjects, setFolderProjects] = useState<
     { path: string; section: string; name: string; track: string; category: string }[]
   >([])
+  const [folders, setFolders] = useState<string[]>([])
   const [view, setView] = useState<"list" | "cards">("list")
 
   useEffect(() => {
     loadLearningNodes().then(setNodes)
     loadProjectsFromPublicFolder().then(setFolderProjects)
+    loadProjectFolders().then(setFolders)
   }, [])
 
   const displayNodes = useMemo(() => {
@@ -81,8 +85,10 @@ export default function LearningPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <h1 className="text-xl font-bold">Learning Map</h1>
+
+      <TruthPanel nodes={nodes} folders={folders} />
 
       <ViewToggle view={view} onChange={setView} />
 

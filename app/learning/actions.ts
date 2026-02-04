@@ -3,7 +3,12 @@
 import fs from "fs"
 import path from "path"
 import { getNodes, saveNodes } from "./lib/nodeManager"
+import { readProjectFolders } from "./lib/projectIndex"
 import { LearningNode } from "./models/LearningNode"
+
+export async function loadProjectFolders(): Promise<string[]> {
+  return readProjectFolders()
+}
 
 export type FolderProject = {
   path: string
