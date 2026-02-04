@@ -27,7 +27,7 @@ export default function NodeCard({
   const projectUrl = node.projectPath
     ? `${encodeURI(node.projectPath)}/index.html`
     : null
-  const [showPreview, setShowPreview] = useState(false)
+  const [showPreview, setShowPreview] = useState(true)
 
   return (
     <div className="rounded overflow-hidden border border-[var(--gaia-border)] bg-[var(--gaia-surface)]">

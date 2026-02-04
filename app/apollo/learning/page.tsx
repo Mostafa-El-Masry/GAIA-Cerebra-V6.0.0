@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import Link from "next/link"
 import { LearningNode } from "./models/LearningNode"
 import {
   loadLearningNodes,
@@ -138,12 +137,6 @@ export default function LearningPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4 flex-wrap">
         <h1 className="text-xl font-bold text-[var(--gaia-text-strong)]">Learning Map</h1>
-        <Link
-          href="/apollo/learning/graph"
-          className="text-sm text-[var(--gaia-accent)] hover:underline"
-        >
-          Graph View
-        </Link>
       </div>
 
       <LearningStatusCard

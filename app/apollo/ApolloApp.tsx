@@ -70,7 +70,8 @@ export default function ApolloApp() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <LinkCard
               href="/apollo/learning"
-              title="Learning Surface"
+              title="Labs"
+              description="Learning map, projects, skills, and reflections."
               icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -82,10 +83,9 @@ export default function ApolloApp() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                  <path d="M8 7h8" />
-                  <path d="M8 11h8" />
+                  <path d="M8 13v3a4 4 0 0 0 8 0v-3" />
+                  <path d="M9 8h6l1 3H8l1-3z" />
+                  <path d="M12 3v5" />
                 </svg>
               }
             />
@@ -149,40 +149,6 @@ export default function ApolloApp() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     d="M10 12h4"
-                  />
-                </svg>
-              }
-            />
-
-            <LinkCard
-              href="/apollo/labs"
-              title="Labs"
-              description="Experiments and prototyping space for ideas."
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8 13v3a4 4 0 0 0 8 0v-3"
-                  />
-                  <path
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 8h6l1 3H8l1-3z"
-                  />
-                  <path
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 3v5"
                   />
                 </svg>
               }

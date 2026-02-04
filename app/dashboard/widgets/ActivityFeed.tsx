@@ -38,7 +38,7 @@ export default function ActivityFeed() {
           else if (k.startsWith("wealth_")) route = "/wealth";
           else if (k.startsWith("health_")) route = "/health";
           else if (k.startsWith("timeline_")) route = "/timeline";
-          else if (k.startsWith("labs_")) route = "/apollo/labs";
+          else if (k.startsWith("labs_")) route = "/apollo/learning";
           items.push({ key: k, when, route });
         }
       }
