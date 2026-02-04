@@ -6,37 +6,37 @@ import ApolloStudyGate from "./components/ApolloStudyGate";
 
 export default function ApolloApp() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-6">
+    <div className="wealth-theme min-h-screen bg-[var(--gaia-surface)] py-6">
       <main className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--gaia-text-muted)]">
               Apollo
             </p>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-[var(--gaia-text-strong)]">
               Ask, capture, and keep your study flow
             </h1>
-            <p className="max-w-3xl text-sm sm:text-base text-slate-600">
+            <p className="max-w-3xl text-sm sm:text-base text-[var(--gaia-text-default)]">
               Use this surface to ask focused questions and move the best bits
               into your archive. Academy handles lessons; Apollo keeps your
               running notes tidy.
             </p>
           </div>
-          <span className="inline-flex items-center rounded-full border border-emerald-100 bg-white px-3 py-1 shadow-sm text-xs font-semibold text-emerald-700">
-            <span className="mr-2 h-2 w-2 rounded-full bg-emerald-500" />
+          <span className="inline-flex items-center rounded-full border border-[var(--gaia-positive-border)] bg-[var(--gaia-positive-bg)] px-3 py-1 shadow-sm text-xs font-semibold text-[var(--gaia-positive)]">
+            <span className="mr-2 h-2 w-2 rounded-full bg-[var(--gaia-positive)]" />
             Assistant online
           </span>
         </header>
 
-        <section className="rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-4 sm:px-6 py-4 sm:py-5 shadow-[0_12px_35px_rgba(15,23,42,0.18)] text-white flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <section className="rounded-3xl border border-[var(--gaia-border)] bg-[var(--gaia-contrast-bg)] px-4 sm:px-6 py-4 sm:py-5 shadow-sm flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.18em] text-white/60">
+            <p className="text-xs uppercase tracking-[0.18em] text-[var(--gaia-contrast-text)]/80">
               Your study assistant
             </p>
-            <h2 className="text-lg sm:text-xl font-semibold">
+            <h2 className="text-lg sm:text-xl font-semibold text-[var(--gaia-contrast-text)]">
               Capture answers, then archive the signal
             </h2>
-            <p className="text-xs sm:text-[13px] text-white/80 max-w-xl">
+            <p className="text-xs sm:text-[13px] text-[var(--gaia-contrast-text)]/90 max-w-xl">
               Ask targeted questions, highlight the useful parts, and send them
               straight into your Apollo archive so you keep a clean record
               alongside Academy.
@@ -45,25 +45,25 @@ export default function ApolloApp() {
           <div className="flex flex-col sm:items-end gap-2">
             <a
               href="#ask"
-              className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-slate-900 shadow-sm hover:bg-emerald-100 transition"
+              className="inline-flex items-center justify-center rounded-full bg-[var(--gaia-surface)] px-4 py-2 text-xs font-semibold text-[var(--gaia-text-strong)] shadow-sm hover:bg-[var(--gaia-surface-soft)] transition"
             >
               Jump to Ask panel
             </a>
             <a
               href="/apollo/archives"
-              className="text-[11px] underline text-white/70 hover:text-white inline-flex items-center justify-end"
+              className="text-[11px] underline text-[var(--gaia-contrast-text)]/80 hover:text-[var(--gaia-contrast-text)] inline-flex items-center justify-end"
             >
               View your archive
             </a>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white/90 px-4 sm:px-6 py-4 shadow-sm space-y-3">
+        <section className="rounded-3xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] px-4 sm:px-6 py-4 shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-[var(--gaia-text-strong)]">
               Paths into Apollo
             </h2>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-[var(--gaia-text-muted)]">
               Open tools for where you are in the flow
             </span>
           </div>
@@ -158,18 +158,18 @@ export default function ApolloApp() {
 
         <section
           id="ask"
-          className="rounded-3xl border border-slate-200 bg-white/90 p-4 sm:p-6 shadow-sm space-y-3"
+          className="rounded-3xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-4 sm:p-6 shadow-sm space-y-3"
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--gaia-text-muted)]">
                 Ask & capture
               </p>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-[var(--gaia-text-strong)]">
                 Work with ChatGPT, then archive the signal
               </h2>
             </div>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-[var(--gaia-text-muted)]">
               Focused Q&amp;A for your current lessons
             </span>
           </div>

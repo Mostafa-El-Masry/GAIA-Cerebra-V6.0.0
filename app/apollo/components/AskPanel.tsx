@@ -13,11 +13,11 @@ import {
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
 
 const fieldStyles =
-  'w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-900 shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200';
+  'w-full rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-4 py-2 text-sm font-medium text-[var(--gaia-text-default)] shadow-sm outline-none focus:border-[var(--gaia-accent)] focus:ring-2 focus:ring-[var(--gaia-info-bg)]';
 const primaryButton =
-  'inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-700 disabled:opacity-60 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center rounded-xl bg-[var(--gaia-contrast-bg)] px-4 py-2 text-sm font-semibold text-[var(--gaia-contrast-text)] shadow-sm transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gaia-contrast-bg)] disabled:opacity-60 disabled:cursor-not-allowed';
 const subtleButton =
-  'inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-300 disabled:opacity-60 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gaia-text-strong)] shadow-sm transition hover:bg-[var(--gaia-surface-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gaia-border)] disabled:opacity-60 disabled:cursor-not-allowed';
 
 
 type AskPanelProps = {
@@ -171,13 +171,13 @@ export default function AskPanel({ onChange }: AskPanelProps) {
       </div>
 
       <div className='flex flex-wrap items-center gap-3 text-sm'>
-        {statusMessage && <span className='text-slate-600'>{statusMessage}</span>}
+        {statusMessage && <span className='text-[var(--gaia-text-muted)]'>{statusMessage}</span>}
         {error && (
-          <span className='font-semibold text-rose-600'>{error}</span>
+          <span className='font-semibold text-[var(--gaia-negative)]'>{error}</span>
         )}
         {!error && hasHistory && (
           <button
-            className='text-slate-600 underline-offset-4 hover:text-slate-800 hover:underline'
+            className='text-[var(--gaia-text-muted)] underline-offset-4 hover:text-[var(--gaia-text-strong)] hover:underline'
             onClick={resetChat}
           >
             Reset chat
@@ -187,7 +187,7 @@ export default function AskPanel({ onChange }: AskPanelProps) {
 
       <textarea
         ref={taRef}
-        className='min-h-[220px] w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200'
+        className='min-h-[220px] w-full rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface)] px-4 py-3 text-sm leading-relaxed text-[var(--gaia-text-default)] shadow-sm outline-none focus:border-[var(--gaia-accent)] focus:ring-2 focus:ring-[var(--gaia-info-bg)]'
         value={buffer}
         onChange={(e) => setBuffer(e.target.value)}
       />
