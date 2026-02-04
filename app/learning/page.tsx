@@ -10,10 +10,13 @@ import {
   updateLearningNodeMeta
 } from "./actions"
 
+import { generateAlignmentSignals } from "./lib/alignment"
+
 import ViewToggle from "./components/ViewToggle"
 import ListView from "./components/ListView"
 import CardView from "./components/CardView"
 import TruthPanel from "./components/TruthPanel"
+import AlignmentPanel from "./components/AlignmentPanel"
 
 const FOLDER_NODE_PREFIX = "folder-"
 
@@ -61,6 +64,11 @@ export default function LearningPage() {
     return [...fromJson, ...folderOnly]
   }, [nodes, folderProjects])
 
+  const alignmentSignals = useMemo(
+    () => generateAlignmentSignals(nodes, folders),
+    [nodes, folders]
+  )
+
   async function onStatusChange(
     id: string,
     status: LearningNode["status"]
@@ -89,6 +97,8 @@ export default function LearningPage() {
       <h1 className="text-xl font-bold">Learning Map</h1>
 
       <TruthPanel nodes={nodes} folders={folders} />
+
+      <AlignmentPanel signals={alignmentSignals} />
 
       <ViewToggle view={view} onChange={setView} />
 
