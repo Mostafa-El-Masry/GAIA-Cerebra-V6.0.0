@@ -1,3 +1,9 @@
+export type ReflectionEntry = {
+  id: string
+  date: string
+  text: string
+}
+
 export type LearningNode = {
   id: string
   title: string
@@ -12,4 +18,6 @@ export type LearningNode = {
   order?: number
 
   projectPath?: string   // e.g. "/projects/javascript-01"
+
+  reflections?: ReflectionEntry[]
 }

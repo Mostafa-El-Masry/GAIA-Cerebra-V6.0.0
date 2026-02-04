@@ -7,7 +7,8 @@ import {
   loadProjectsFromPublicFolder,
   loadProjectFolders,
   updateLearningNodeStatus,
-  updateLearningNodeMeta
+  updateLearningNodeMeta,
+  addReflectionToNode
 } from "./actions"
 
 import { generateAlignmentSignals } from "./lib/alignment"
@@ -92,6 +93,12 @@ export default function LearningPage() {
     )
   }
 
+  async function onAddReflection(nodeId: string, text: string) {
+    if (nodeId.startsWith(FOLDER_NODE_PREFIX)) return
+    const updated = await addReflectionToNode(nodeId, text)
+    if (updated) setNodes(updated)
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold">Learning Map</h1>
@@ -107,12 +114,14 @@ export default function LearningPage() {
           nodes={displayNodes}
           onStatusChange={onStatusChange}
           onMetaChange={onMetaChange}
+          onAddReflection={onAddReflection}
         />
       ) : (
         <CardView
           nodes={displayNodes}
           onStatusChange={onStatusChange}
           onMetaChange={onMetaChange}
+          onAddReflection={onAddReflection}
         />
       )}
     </div>

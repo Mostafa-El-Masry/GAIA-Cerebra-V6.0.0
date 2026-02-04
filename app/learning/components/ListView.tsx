@@ -3,10 +3,13 @@
 import { LearningNode } from "../models/LearningNode"
 import NodeCard from "./NodeCard"
 
+const FOLDER_NODE_PREFIX = "folder-"
+
 export default function ListView({
   nodes,
   onStatusChange,
-  onMetaChange
+  onMetaChange,
+  onAddReflection
 }: {
   nodes: LearningNode[]
   onStatusChange: (id: string, status: LearningNode["status"]) => void
@@ -15,6 +18,7 @@ export default function ListView({
     field: "track" | "category" | "order" | "projectPath",
     value: string | number
   ) => void
+  onAddReflection?: (nodeId: string, text: string) => void
 }) {
   const grouped = nodes.reduce<Record<string, LearningNode[]>>(
     (acc, node) => {
@@ -40,6 +44,11 @@ export default function ListView({
                   node={node}
                   onStatusChange={onStatusChange}
                   onMetaChange={onMetaChange}
+                  onAddReflection={
+                    onAddReflection && !node.id.startsWith(FOLDER_NODE_PREFIX)
+                      ? (text) => onAddReflection(node.id, text)
+                      : undefined
+                  }
                 />
               ))}
           </div>

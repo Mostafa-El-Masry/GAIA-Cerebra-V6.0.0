@@ -1,11 +1,13 @@
 "use client"
 
 import { LearningNode } from "../models/LearningNode"
+import ReflectionPanel from "./ReflectionPanel"
 
 export default function NodeCard({
   node,
   onStatusChange,
-  onMetaChange
+  onMetaChange,
+  onAddReflection
 }: {
   node: LearningNode
   onStatusChange: (id: string, status: LearningNode["status"]) => void
@@ -14,6 +16,7 @@ export default function NodeCard({
     field: "track" | "category" | "order" | "projectPath",
     value: string | number
   ) => void
+  onAddReflection?: (text: string) => void
 }) {
   const previewSrc = node.projectPath
     ? `${encodeURI(node.projectPath)}/preview.png`
@@ -107,6 +110,13 @@ export default function NodeCard({
             className="border rounded px-2 py-1 w-56"
           />
         </div>
+
+        {onAddReflection && (
+          <ReflectionPanel
+            reflections={node.reflections}
+            onAdd={onAddReflection}
+          />
+        )}
       </div>
     </div>
   )

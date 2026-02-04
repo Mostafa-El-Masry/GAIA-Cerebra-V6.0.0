@@ -4,6 +4,7 @@ import fs from "fs"
 import path from "path"
 import { getNodes, saveNodes } from "./lib/nodeManager"
 import { readProjectFolders } from "./lib/projectIndex"
+import { addReflection } from "./lib/reflectionManager"
 import { LearningNode } from "./models/LearningNode"
 
 export async function loadProjectFolders(): Promise<string[]> {
@@ -84,4 +85,14 @@ export async function updateLearningNodeMeta(
 
   nodes[index] = { ...nodes[index], [field]: value }
   saveNodes(nodes)
+}
+
+export async function addReflectionToNode(
+  nodeId: string,
+  text: string
+): Promise<LearningNode[] | null> {
+  const nodes = getNodes()
+  const updated = addReflection(nodes, nodeId, text)
+  saveNodes(updated)
+  return updated
 }
