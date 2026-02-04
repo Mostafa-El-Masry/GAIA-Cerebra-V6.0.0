@@ -9,7 +9,8 @@ export default function CardView({
   nodes,
   onStatusChange,
   onMetaChange,
-  onAddReflection
+  onAddReflection,
+  onAcceptSkill
 }: {
   nodes: LearningNode[]
   onStatusChange: (id: string, status: LearningNode["status"]) => void
@@ -19,6 +20,7 @@ export default function CardView({
     value: string | number
   ) => void
   onAddReflection?: (nodeId: string, text: string) => void
+  onAcceptSkill?: (nodeId: string, title: string) => void
 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -33,6 +35,11 @@ export default function CardView({
             onAddReflection={
               onAddReflection && !node.id.startsWith(FOLDER_NODE_PREFIX)
                 ? (text) => onAddReflection(node.id, text)
+                : undefined
+            }
+            onAcceptSkill={
+              onAcceptSkill && !node.id.startsWith(FOLDER_NODE_PREFIX)
+                ? (title) => onAcceptSkill(node.id, title)
                 : undefined
             }
           />

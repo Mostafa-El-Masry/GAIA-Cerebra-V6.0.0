@@ -8,8 +8,11 @@ import {
   loadProjectFolders,
   updateLearningNodeStatus,
   updateLearningNodeMeta,
-  addReflectionToNode
+  addReflectionToNode,
+  updateLearningNodeSkills
 } from "./actions"
+import { loadSkills, saveSkills } from "./lib/skillManager"
+import type { Skill } from "./models/Skill"
 
 import { generateAlignmentSignals } from "./lib/alignment"
 
@@ -99,6 +102,25 @@ export default function LearningPage() {
     if (updated) setNodes(updated)
   }
 
+  async function onAcceptSkill(nodeId: string, title: string) {
+    if (nodeId.startsWith(FOLDER_NODE_PREFIX)) return
+    const node = nodes.find((n) => n.id === nodeId)
+    if (!node) return
+    const newSkill: Skill = {
+      id: crypto.randomUUID(),
+      title,
+      level: 1,
+      lessons: [],
+    }
+    const skills = loadSkills()
+    saveSkills([...skills, newSkill])
+    const newSkills = [...(node.skills || []), newSkill.id]
+    await updateLearningNodeSkills(nodeId, newSkills)
+    setNodes((prev) =>
+      prev.map((n) => (n.id === nodeId ? { ...n, skills: newSkills } : n))
+    )
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold">Learning Map</h1>
@@ -115,6 +137,7 @@ export default function LearningPage() {
           onStatusChange={onStatusChange}
           onMetaChange={onMetaChange}
           onAddReflection={onAddReflection}
+          onAcceptSkill={onAcceptSkill}
         />
       ) : (
         <CardView
@@ -122,6 +145,7 @@ export default function LearningPage() {
           onStatusChange={onStatusChange}
           onMetaChange={onMetaChange}
           onAddReflection={onAddReflection}
+          onAcceptSkill={onAcceptSkill}
         />
       )}
     </div>

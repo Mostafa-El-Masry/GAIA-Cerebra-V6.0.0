@@ -1,13 +1,16 @@
 "use client"
 
 import { LearningNode } from "../models/LearningNode"
+import { suggestSkills } from "../lib/suggestions"
 import ReflectionPanel from "./ReflectionPanel"
+import SkillSuggestionPanel from "./SkillSuggestionPanel"
 
 export default function NodeCard({
   node,
   onStatusChange,
   onMetaChange,
-  onAddReflection
+  onAddReflection,
+  onAcceptSkill
 }: {
   node: LearningNode
   onStatusChange: (id: string, status: LearningNode["status"]) => void
@@ -17,6 +20,7 @@ export default function NodeCard({
     value: string | number
   ) => void
   onAddReflection?: (text: string) => void
+  onAcceptSkill?: (title: string) => void
 }) {
   const previewSrc = node.projectPath
     ? `${encodeURI(node.projectPath)}/preview.png`
@@ -115,6 +119,13 @@ export default function NodeCard({
           <ReflectionPanel
             reflections={node.reflections}
             onAdd={onAddReflection}
+          />
+        )}
+
+        {onAcceptSkill && (
+          <SkillSuggestionPanel
+            suggestions={suggestSkills(node)}
+            onAccept={onAcceptSkill}
           />
         )}
       </div>

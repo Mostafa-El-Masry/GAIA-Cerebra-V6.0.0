@@ -8,6 +8,7 @@ export default function NodeList({
   onStatusChange,
   onMetaChange,
   onAddReflection,
+  onAcceptSkill,
 }: {
   nodes: LearningNode[]
   onStatusChange: (id: string, status: LearningNode['status']) => void
@@ -17,6 +18,7 @@ export default function NodeList({
     value: string | number
   ) => void
   onAddReflection?: (nodeId: string, text: string) => void
+  onAcceptSkill?: (nodeId: string, title: string) => void
 }) {
   return (
     <div className='space-y-2'>
@@ -29,6 +31,11 @@ export default function NodeList({
           onAddReflection={
             onAddReflection && !node.id.startsWith(FOLDER_NODE_PREFIX)
               ? (text) => onAddReflection(node.id, text)
+              : undefined
+          }
+          onAcceptSkill={
+            onAcceptSkill && !node.id.startsWith(FOLDER_NODE_PREFIX)
+              ? (title) => onAcceptSkill(node.id, title)
               : undefined
           }
         />

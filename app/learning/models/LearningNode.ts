@@ -20,4 +20,5 @@ export type LearningNode = {
   projectPath?: string   // e.g. "/projects/javascript-01"
 
   reflections?: ReflectionEntry[]
+  skills?: string[]
 }

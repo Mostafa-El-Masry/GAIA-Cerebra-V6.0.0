@@ -9,7 +9,8 @@ export default function ListView({
   nodes,
   onStatusChange,
   onMetaChange,
-  onAddReflection
+  onAddReflection,
+  onAcceptSkill
 }: {
   nodes: LearningNode[]
   onStatusChange: (id: string, status: LearningNode["status"]) => void
@@ -19,6 +20,7 @@ export default function ListView({
     value: string | number
   ) => void
   onAddReflection?: (nodeId: string, text: string) => void
+  onAcceptSkill?: (nodeId: string, title: string) => void
 }) {
   const grouped = nodes.reduce<Record<string, LearningNode[]>>(
     (acc, node) => {
@@ -47,6 +49,11 @@ export default function ListView({
                   onAddReflection={
                     onAddReflection && !node.id.startsWith(FOLDER_NODE_PREFIX)
                       ? (text) => onAddReflection(node.id, text)
+                      : undefined
+                  }
+                  onAcceptSkill={
+                    onAcceptSkill && !node.id.startsWith(FOLDER_NODE_PREFIX)
+                      ? (title) => onAcceptSkill(node.id, title)
                       : undefined
                   }
                 />

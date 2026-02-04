@@ -96,3 +96,14 @@ export async function addReflectionToNode(
   saveNodes(updated)
   return updated
 }
+
+export async function updateLearningNodeSkills(
+  nodeId: string,
+  skills: string[]
+): Promise<void> {
+  const nodes = getNodes()
+  const index = nodes.findIndex((n) => n.id === nodeId)
+  if (index === -1) return
+  nodes[index] = { ...nodes[index], skills }
+  saveNodes(nodes)
+}
