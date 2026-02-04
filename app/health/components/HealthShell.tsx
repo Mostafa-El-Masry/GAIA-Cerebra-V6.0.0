@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { Menu, X } from "lucide-react";
 import { Manrope } from "next/font/google";
 
 const manrope = Manrope({
@@ -59,9 +60,7 @@ export default function HealthShell({ children }: { children: ReactNode }) {
               className="touch-target -ml-1 inline-flex items-center justify-center rounded-lg p-2 text-[var(--gaia-text-default)] hover:bg-[var(--gaia-surface-soft)]"
               onClick={() => setMobileOpen(true)}
             >
-              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <Menu className="h-6 w-6" aria-hidden />
             </button>
             <div>
               <p className="text-xs uppercase tracking-[0.14em] gaia-muted">Gaia Health</p>
@@ -90,9 +89,7 @@ export default function HealthShell({ children }: { children: ReactNode }) {
                   className="touch-target inline-flex items-center justify-center rounded-lg p-2 text-[var(--gaia-text-muted)] hover:bg-[var(--gaia-surface-soft)]"
                   onClick={closeDrawer}
                 >
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <X className="h-5 w-5" aria-hidden />
                 </button>
               </div>
               <nav className="space-y-0.5">

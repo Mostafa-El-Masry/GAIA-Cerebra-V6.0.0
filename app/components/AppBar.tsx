@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function AppBar() {
   const pathname = usePathname();
@@ -33,35 +34,44 @@ export default function AppBar() {
     { href: "/settings", label: "Settings" },
   ];
 
+  const isIntro = pathname === "/";
+  const headerClass = isIntro
+    ? "fixed inset-x-0 top-0 z-50 h-14 md:h-16 bg-transparent border-none shadow-none [padding-left:env(safe-area-inset-left)] [padding-right:env(safe-area-inset-right)] [padding-top:env(safe-area-inset-top)]"
+    : "gaia-glass-strong gaia-border fixed inset-x-0 top-0 z-50 h-14 border-b border backdrop-blur md:h-16 [padding-left:env(safe-area-inset-left)] [padding-right:env(safe-area-inset-right)] [padding-top:env(safe-area-inset-top)]";
+
   return (
-    <header className="gaia-glass-strong gaia-border fixed inset-x-0 top-0 z-50 h-14 border-b border backdrop-blur md:h-16 [padding-left:env(safe-area-inset-left)] [padding-right:env(safe-area-inset-right)] [padding-top:env(safe-area-inset-top)]">
+    <header className={headerClass}>
       <div className="mx-auto flex h-full max-w-screen-xl items-center gap-3 px-3 sm:px-4">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2 touch-target min-w-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/gaia-intro.svg"
-              onError={(event) => {
-                const el = event.currentTarget as HTMLImageElement;
-                el.src = "/gaia-intro.png";
-              }}
-              alt="GAIA"
-              className="h-9 w-auto shrink-0"
-            />
-            <span className="sr-only">GAIA Home</span>
-          </Link>
+          {!isIntro && (
+            <Link href="/" className="flex items-center gap-2 touch-target min-w-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/gaia-intro.svg"
+                onError={(event) => {
+                  const el = event.currentTarget as HTMLImageElement;
+                  el.src = "/gaia-intro.png";
+                }}
+                alt="GAIA"
+                className="h-9 w-auto shrink-0"
+              />
+              <span className="sr-only">GAIA Home</span>
+            </Link>
+          )}
 
-          {/* Mobile menu button */}
+          {/* Hamburger: toggles main nav + search panel; on intro this is the only visible control */}
           <button
             type="button"
-            className="touch-target -ml-1 inline-flex items-center justify-center rounded-lg p-2 md:hidden"
+            className={`touch-target -ml-1 inline-flex items-center justify-center rounded-lg p-2 ${isIntro ? "" : "md:hidden"} ${isIntro ? "rounded-full gaia-glass-strong gaia-border border shadow-sm" : ""}`}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
           >
-            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            {mobileOpen ? (
+              <X className="h-6 w-6" aria-hidden />
+            ) : (
+              <Menu className="h-6 w-6" aria-hidden />
+            )}
           </button>
         </div>
 
@@ -88,9 +98,9 @@ export default function AppBar() {
           <div className="flex-shrink-0" />
         </div>
 
-        {/* Mobile slide-down panel */}
+        {/* Slide-down menu panel (always when open on intro; on other pages only on mobile) */}
         {mobileOpen && (
-          <div className="absolute inset-x-0 top-full z-40 flex flex-col gap-3 border-b gaia-border gaia-glass p-3 md:hidden [padding-left:max(0.75rem,env(safe-area-inset-left))] [padding-right:max(0.75rem,env(safe-area-inset-right))]">
+          <div className={`absolute inset-x-0 top-full z-40 flex flex-col gap-3 border-b gaia-border gaia-glass p-3 ${isIntro ? "" : "md:hidden"} [padding-left:max(0.75rem,env(safe-area-inset-left))] [padding-right:max(0.75rem,env(safe-area-inset-right))]`}>
             {pathname !== "/" && (
               <form onSubmit={submitSearch} role="search">
                 <label htmlFor="gaia-search-mobile" className="sr-only">
