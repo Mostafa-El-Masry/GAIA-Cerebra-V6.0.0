@@ -6,9 +6,10 @@
 import fs from "fs";
 import path from "path";
 
-const ACADEMY_ROOT = path.join(process.cwd(), "data", "academy");
-const PATHS_DIR = path.join(ACADEMY_ROOT, "paths");
-const COMPLETED_FILE = path.join(ACADEMY_ROOT, "completed.json");
+/** Lesson files live here (canonical Academy folder). */
+const PATHS_DIR = path.join(process.cwd(), "Academy", "lessons");
+/** Completion state stays in data/academy so it remains writable. */
+const COMPLETED_FILE = path.join(process.cwd(), "data", "academy", "completed.json");
 
 export const PATH_IDS = [
   "self-healing",
@@ -87,6 +88,18 @@ export function deleteLesson(pathId: PathId, lessonId: string): boolean {
   fs.unlinkSync(filePath);
   unmarkCompleted(pathId, lessonId);
   return true;
+}
+
+/** Read lesson markdown content from disk. Returns null if file does not exist. */
+export function getLessonContent(pathId: PathId, lessonId: string): string | null {
+  const dir = lessonsDir(pathId);
+  const filePath = path.join(dir, `${lessonId}${LESSON_EXT}`);
+  if (!fs.existsSync(filePath)) return null;
+  return fs.readFileSync(filePath, "utf-8");
+}
+
+export function getPathDisplayName(pathId: PathId): string {
+  return PATH_DISPLAY_NAMES[pathId];
 }
 
 export type PathInfo = {

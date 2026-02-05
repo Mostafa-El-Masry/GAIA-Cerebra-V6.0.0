@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 type LessonItem = { id: string; completed: boolean };
@@ -144,9 +145,12 @@ export default function AcademyDashboardPage() {
                           }
                           className="rounded border gaia-border"
                         />
-                        <span className="text-[var(--gaia-text-default)] truncate">
+                        <Link
+                          href={`/apollo/academy/lesson/${path.id}/${lesson.id}`}
+                          className="truncate text-[var(--gaia-text-default)] underline hover:text-[var(--gaia-text-strong)]"
+                        >
                           {lesson.id}
-                        </span>
+                        </Link>
                       </label>
                       <button
                         type="button"
@@ -162,7 +166,7 @@ export default function AcademyDashboardPage() {
               </ul>
             ) : (
               <p className="text-sm text-[var(--gaia-text-muted)]">
-                No lessons yet. Add .md files in data/academy/paths/{path.id}/lessons/
+                No lessons yet. Add .md files in Academy/lessons/{path.id}/lessons/
               </p>
             )}
           </section>

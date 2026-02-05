@@ -1,0 +1,35 @@
+# Asking For Help
+
+## Introduction
+
+Along your programming journey, you will inevitably need to ask questions in an online coding community or in conversations with your colleagues. While asking questions may seem rather simple, in a programming environment it is essential to ask well-formed questions with as much context as needed so you can get the most out of asking for help. In essence, "help others help you!" This lesson will provide you with the tools to effectively ask questions in communities such as chat servers, Stack Overflow, and in the workplace.
+
+## Lesson overview
+
+- Explain techniques for asking programming questions.
+- Explain and avoid qualities of "bad" questions.
+- Ask effective and well-formed questions.
+
+## Tips for getting the best help possible
+
+### Always provide your code and the surrounding context
+
+When asking a question, it is essential to provide your code, error message, terminal command, server output, and other relevant details. You should provide as much context as possible and zero in on the specific problem, such as pointing people to a specific function or line number in your code. Providing this relevant information makes it easier for others to help you.
+
+If your question does not provide any code or other relevant information, it will be difficult for others to help you. In order to fully understand your question, there will be a lot of unnecessary back and forth conversation. This can be discouraging for you because any answers with incomplete information will not solve your problem. If you truly want to ask a conceptual question, you should indicate this as part of your question.
+
+### Ask about the problem at hand, not the solution itself
+
+A lot of learners ask exactly how to approach a given task or assignment, such as: "How do I complete Step 5 of the Rock Paper Scissors Assignment?"
+
+Keep in mind that you're supposed to figure out how to solve the assignments yourself, and figuring out an approach is essential to your learning journey. A much better question might look like this:
+
+"Hey, I'm trying to return a string that displays the winner in Rock Paper Scissors, but I'm getting a syntax error on line 12. How can I fix this? Here's my code."
+
+In sharing your attempt, people know what you've tried and won't suggest things that might not have worked out for you. It also allows them to debug your current iteration of code, rather than sending you down a path that has you start all over again when you might be very close to a solution.
+
+Now, if you're completely stuck with where to start, it's completely fine to let people know that you're stuck. Asking where you can start and what you can research to get on the right track empowers you to be able to resolve issues largely on your own in the future. It is also recommended that you share your pseudo code so people can nudge you in the right direction or correct any misunderstandings you may have.
+
+### Don't take asking for more context to heart
+
+People who volunteer in coding communities are here to help! A question you may feel is coherent and "obvious" probably isn't if you are being asked for more context. While something may seem "obvious" to a beginner, it's sometimes nowhere near "obvious" to an expert. An expert knows about many, many more situations that could cause an issue someone is experiencing, and would want to refrain from sending a learner down the wrong path. People take time out of their day to help, so make it as easy as possible for them to help you! There's probably a good reason why they need more information, so trust their judgment and experience when they ask.
