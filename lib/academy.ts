@@ -1,0 +1,119 @@
+/**
+ * File-driven Academy: paths and lessons are read from disk.
+ * No hardcoded lesson counts. Completion stored in completed.json.
+ */
+
+import fs from "fs";
+import path from "path";
+
+const ACADEMY_ROOT = path.join(process.cwd(), "data", "academy");
+const PATHS_DIR = path.join(ACADEMY_ROOT, "paths");
+const COMPLETED_FILE = path.join(ACADEMY_ROOT, "completed.json");
+
+export const PATH_IDS = [
+  "self-healing",
+  "web-fundamentals",
+  "financial-literacy",
+] as const;
+export type PathId = (typeof PATH_IDS)[number];
+
+const PATH_DISPLAY_NAMES: Record<PathId, string> = {
+  "self-healing": "Self-Healing",
+  "web-fundamentals": "Web Fundamentals",
+  "financial-literacy": "Financial Literacy",
+};
+
+/** Lesson file extension we consider as lesson files */
+const LESSON_EXT = ".md";
+
+function lessonsDir(pathId: PathId): string {
+  return path.join(PATHS_DIR, pathId, "lessons");
+}
+
+function readCompleted(): Record<string, string[]> {
+  try {
+    const raw = fs.readFileSync(COMPLETED_FILE, "utf-8");
+    const data = JSON.parse(raw) as Record<string, string[]>;
+    return data;
+  } catch {
+    return {};
+  }
+}
+
+function writeCompleted(data: Record<string, string[]>): void {
+  fs.mkdirSync(path.dirname(COMPLETED_FILE), { recursive: true });
+  fs.writeFileSync(COMPLETED_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+/** List lesson filenames (without extension) in a path's lessons folder. No hardcoded counts. */
+export function listLessonIds(pathId: PathId): string[] {
+  const dir = lessonsDir(pathId);
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir);
+  return files
+    .filter((f) => path.extname(f).toLowerCase() === LESSON_EXT)
+    .map((f) => path.basename(f, LESSON_EXT));
+}
+
+/** Get completed lesson ids for a path from the index. */
+export function getCompletedIds(pathId: PathId): string[] {
+  const data = readCompleted();
+  return data[pathId] ?? [];
+}
+
+/** Mark a lesson completed (add to index). */
+export function markCompleted(pathId: PathId, lessonId: string): void {
+  const data = readCompleted();
+  const list = data[pathId] ?? [];
+  if (!list.includes(lessonId)) {
+    data[pathId] = [...list, lessonId];
+    writeCompleted(data);
+  }
+}
+
+/** Remove a lesson from the completed index. */
+export function unmarkCompleted(pathId: PathId, lessonId: string): void {
+  const data = readCompleted();
+  const list = (data[pathId] ?? []).filter((id) => id !== lessonId);
+  data[pathId] = list;
+  writeCompleted(data);
+}
+
+/** Delete a lesson file from disk and remove from completed index. */
+export function deleteLesson(pathId: PathId, lessonId: string): boolean {
+  const dir = lessonsDir(pathId);
+  const filePath = path.join(dir, `${lessonId}${LESSON_EXT}`);
+  if (!fs.existsSync(filePath)) return false;
+  fs.unlinkSync(filePath);
+  unmarkCompleted(pathId, lessonId);
+  return true;
+}
+
+export type PathInfo = {
+  id: PathId;
+  name: string;
+  totalLessons: number;
+  completedLessons: number;
+  lessons: { id: string; completed: boolean }[];
+};
+
+/** Get dashboard data for all paths. All counts from files + index. */
+export function getPathsInfo(): PathInfo[] {
+  return PATH_IDS.map((id) => {
+    const lessonIds = listLessonIds(id);
+    const completedIds = getCompletedIds(id);
+    const completedSet = new Set(completedIds);
+    const lessons = lessonIds.map((lid) => ({
+      id: lid,
+      completed: completedSet.has(lid),
+    }));
+    const completedCount = lessons.filter((l) => l.completed).length;
+    return {
+      id,
+      name: PATH_DISPLAY_NAMES[id],
+      totalLessons: lessonIds.length,
+      completedLessons: completedCount,
+      lessons,
+    };
+  });
+}
