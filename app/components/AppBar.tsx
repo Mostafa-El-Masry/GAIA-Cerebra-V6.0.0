@@ -44,7 +44,7 @@ export default function AppBar() {
       <div className="mx-auto flex h-full max-w-screen-xl items-center gap-3 px-3 sm:px-4">
         <div className="flex items-center gap-2">
           {!isIntro && (
-            <Link href="/" className="flex items-center gap-2 touch-target min-w-0">
+            <Link href="/" className="flex touch-target min-w-0 items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/gaia-intro.svg"
@@ -59,18 +59,22 @@ export default function AppBar() {
             </Link>
           )}
 
-          {/* Hamburger: toggles main nav + search panel; on intro this is the only visible control */}
+          {/* Hamburger: navigation list on small screens; always visible on intro, below md on other pages */}
           <button
             type="button"
-            className={`touch-target -ml-1 inline-flex items-center justify-center rounded-lg p-2 ${isIntro ? "" : "md:hidden"} ${isIntro ? "rounded-full gaia-glass-strong gaia-border border shadow-sm" : ""}`}
+            className={`touch-target -ml-1 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg p-2 md:min-w-0 md:min-h-0 ${
+              isIntro
+                ? "rounded-full gaia-glass-strong gaia-border border shadow-sm"
+                : "flex md:hidden"
+            }`}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
           >
             {mobileOpen ? (
-              <X className="h-6 w-6" aria-hidden />
+              <X className="h-6 w-6 shrink-0" aria-hidden />
             ) : (
-              <Menu className="h-6 w-6" aria-hidden />
+              <Menu className="h-6 w-6 shrink-0" aria-hidden />
             )}
           </button>
         </div>

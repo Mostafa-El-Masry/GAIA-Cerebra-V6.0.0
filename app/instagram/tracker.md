@@ -19,8 +19,8 @@
 | `components/MediaCard.tsx`, `MediaGrid.tsx`, `PostMedia.tsx` | Media UI |
 | `components/ActorCard.tsx`, `ReviewBadge.tsx` | Actor/review UI |
 | `hooks/useInstagramData.ts` | Hook with shuffle/options (uses useInstagramData.ts) |
-| `hooks/useInfiniteScroll.ts`, `useLike.ts`, `useLocalStorage.ts` | Hooks |
-| `lib/socialStore.ts`, `supabaseVideos.ts`, `videoStore.ts` | Stores / data |
+| `hooks/useInfiniteScroll.ts`, `useLocalStorage.ts` | Hooks |
+| `lib/supabaseVideos.ts`, `videoStore.ts` | Stores / data |
 | `explore/page.tsx` | Explore route |
 | `messages/page.tsx` | Messages route |
 | `people/[id]/page.tsx` | Person profile route |

@@ -82,7 +82,6 @@ export interface MediaItem {
    * These will later move to Supabase as canonical fields.
    */
   isFavorite?: boolean;
-  viewCount?: number;
   /**
    * If true, this item is manually pinned as the Feature of the Month.
    */

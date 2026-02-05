@@ -14,7 +14,6 @@ export const mockMediaItems: MediaItem[] = [
     createdAt: "2024-02-10T18:30:00.000Z",
     updatedAt: "2024-02-10T18:30:00.000Z",
     isFavorite: true,
-    viewCount: 42,
   },
   {
     id: "img-2",
@@ -28,7 +27,6 @@ export const mockMediaItems: MediaItem[] = [
     localPath: "/gaia-intro2.png",
     createdAt: "2024-03-02T22:15:00.000Z",
     updatedAt: "2024-03-02T22:15:00.000Z",
-    viewCount: 17,
   },
   {
     id: "img-3",
@@ -43,7 +41,6 @@ export const mockMediaItems: MediaItem[] = [
     createdAt: "2023-12-25T19:45:00.000Z",
     updatedAt: "2023-12-25T19:45:00.000Z",
     isFavorite: true,
-    viewCount: 30,
   },
   {
     id: "vid-1",
@@ -84,7 +81,6 @@ export const mockMediaItems: MediaItem[] = [
       },
     ],
     desiredThumbnailCount: 6,
-    viewCount: 55,
     isFavorite: true,
   },
   {
@@ -116,7 +112,6 @@ export const mockMediaItems: MediaItem[] = [
     needsMoreThumbs: true,
     desiredThumbnailCount: 6,
     isFavorite: true,
-    viewCount: 65,
     pinnedForFeature: true,
   },
   {
@@ -150,6 +145,5 @@ export const mockMediaItems: MediaItem[] = [
       },
     ],
     desiredThumbnailCount: 4,
-    viewCount: 25,
   },
 ];
