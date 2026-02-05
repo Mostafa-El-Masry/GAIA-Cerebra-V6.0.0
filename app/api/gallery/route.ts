@@ -371,6 +371,10 @@ async function collectEmbedsFromSupabase(): Promise<ManifestItem[]> {
       );
 
     if (error) {
+      if (error.code === "PGRST205") {
+        // Table gallery_embeds does not exist yet; skip without logging every request
+        return [];
+      }
       console.error("[gallery] failed to load embeds from Supabase", error);
       return [];
     }
