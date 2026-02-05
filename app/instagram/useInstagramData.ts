@@ -175,7 +175,14 @@ export function useInstagramData(fallbackItems: MediaItem[]): GalleryDataState {
         const manifest: ManifestItem[] = Array.isArray(payload?.items)
           ? payload.items
           : [];
-        const mapped = manifest.map(mapManifestToMediaItem).filter(Boolean);
+        // Include videos (local + R2 + embeds) and images from R2 only (no local images).
+        const mapped = manifest
+          .map(mapManifestToMediaItem)
+          .filter(
+            (item): item is MediaItem =>
+              Boolean(item) &&
+              (item.type === "video" || item.type === "image")
+          );
 
         if (!cancelled) {
           const nextItems = mapped.length ? mapped : fallbackItems;

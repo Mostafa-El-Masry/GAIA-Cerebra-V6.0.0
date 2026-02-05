@@ -484,6 +484,38 @@ html[data-theme="dark"] .gaia-scene-bg {
   color: var(--gaia-positive) !important;
 }
 
+/* Dashboard action buttons: semantic colors from theme */
+.gaia-btn-negative {
+  border-color: color-mix(in srgb, var(--gaia-negative) 60%, transparent);
+  background-color: color-mix(in srgb, var(--gaia-negative) 10%, transparent);
+  color: var(--gaia-negative);
+}
+.gaia-btn-negative:hover {
+  background-color: var(--gaia-negative);
+  color: var(--gaia-contrast-text);
+  border-color: var(--gaia-negative);
+}
+.gaia-btn-warning {
+  border-color: color-mix(in srgb, var(--gaia-warning) 60%, transparent);
+  background-color: color-mix(in srgb, var(--gaia-warning) 10%, transparent);
+  color: var(--gaia-warning);
+}
+.gaia-btn-warning:hover {
+  background-color: var(--gaia-warning);
+  color: var(--gaia-foreground);
+  border-color: var(--gaia-warning);
+}
+.gaia-btn-positive {
+  border-color: color-mix(in srgb, var(--gaia-positive) 60%, transparent);
+  background-color: color-mix(in srgb, var(--gaia-positive) 10%, transparent);
+  color: var(--gaia-positive);
+}
+.gaia-btn-positive:hover {
+  background-color: var(--gaia-positive);
+  color: var(--gaia-contrast-text);
+  border-color: var(--gaia-positive);
+}
+
 .gaia-negative {
   color: var(--gaia-negative) !important;
 }

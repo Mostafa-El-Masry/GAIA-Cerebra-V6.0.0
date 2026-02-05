@@ -107,7 +107,7 @@ export default function TodoDaily() {
             Daily Focus
           </h2>
           <p
-            className={`text-sm text-[var(--gaia-text-muted)] transition-all duration-1000 ease-in-out ${
+            className={`text-sm text-[var(--gaia-text-default)] transition-all duration-1000 ease-in-out ${
               isTransitioning
                 ? "opacity-0 translate-y-2"
                 : "opacity-100 translate-y-0"
@@ -133,7 +133,7 @@ export default function TodoDaily() {
           )}
           <Link
             href="/TODO"
-            className="text-sm font-medium text-[var(--gaia-link)] transition-all hover:underline hover:text-[var(--gaia-link)]/80"
+            className="text-sm font-medium text-[var(--gaia-text-default)] transition-all hover:underline hover:opacity-80"
           >
             View full list →
           </Link>

@@ -75,6 +75,8 @@ export function useInstagramData(options?: UseInstagramDataOptions) {
   const allItems = useMemo(() => {
     const allowR2 = hasR2PublicBase();
     const visible = mergedItems.filter((item) => {
+      if (item.type === "image") return allowR2; // pictures from R2 only
+      if (item.type !== "video") return false;
       if (item.r2Path && !allowR2) return false;
       return true;
     });

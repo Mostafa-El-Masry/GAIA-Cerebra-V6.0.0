@@ -79,7 +79,7 @@ export default function TodoSlot(props: Props) {
             {labelOf(category)}
           </span>
           {dueLabel && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-[var(--gaia-border)] px-2 py-1 text-xs font-medium text-[var(--gaia-text-muted)]">
+            <span className="inline-flex items-center gap-1 rounded-md bg-[var(--gaia-border)] px-2 py-1 text-xs font-medium text-[var(--gaia-text-default)]">
               <HugeiconsIcon icon={Calendar02Icon} size={14} className="transition-transform hover:scale-110" /> {dueLabel}
             </span>
           )}
@@ -101,18 +101,20 @@ export default function TodoSlot(props: Props) {
           <div className="flex flex-col gap-2 flex-shrink-0 pt-2">
             <div className="flex items-center justify-around gap-3">
               <button
-                className={`group relative flex items-center justify-center w-12 h-12 rounded-full border-2 border-red-500/60 bg-red-500/10 text-red-500 transition-all duration-300 hover:bg-red-500 hover:text-white hover:border-red-500 hover:scale-110 hover:shadow-lg active:scale-95`}
+                type="button"
+                className="gaia-btn-negative group relative flex w-12 h-12 items-center justify-center rounded-full border-2 transition-all duration-300 hover:scale-110 hover:shadow-lg active:scale-95"
                 onClick={() => onDelete(task.id)}
                 title="Delete task"
               >
-                <HugeiconsIcon 
-                  icon={Delete02Icon} 
-                  size={20} 
-                  className="transition-all duration-300 group-hover:rotate-12" 
+                <HugeiconsIcon
+                  icon={Delete02Icon}
+                  size={20}
+                  className="transition-all duration-300 group-hover:rotate-12"
                 />
               </button>
               <button
-                className={`group relative flex items-center justify-center w-12 h-12 rounded-full border-2 border-amber-500/60 bg-amber-500/10 text-amber-500 transition-all duration-300 hover:bg-amber-500 hover:text-white hover:border-amber-500 hover:scale-110 hover:shadow-lg active:scale-95`}
+                type="button"
+                className="gaia-btn-warning group relative flex w-12 h-12 items-center justify-center rounded-full border-2 transition-all duration-300 hover:scale-110 hover:shadow-lg active:scale-95"
                 onClick={() => onSkip(category)}
                 title="Skip this task"
               >
@@ -123,7 +125,8 @@ export default function TodoSlot(props: Props) {
                 />
               </button>
               <button
-                className={`group relative flex items-center justify-center w-12 h-12 rounded-full border-2 border-green-500/60 bg-green-500/10 text-green-500 transition-all duration-300 hover:bg-green-500 hover:text-white hover:border-green-500 hover:scale-110 hover:shadow-lg active:scale-95`}
+                type="button"
+                className="gaia-btn-positive group relative flex w-12 h-12 items-center justify-center rounded-full border-2 transition-all duration-300 hover:scale-110 hover:shadow-lg active:scale-95"
                 onClick={() => onDone(category)}
                 title="Mark as done"
               >
@@ -137,21 +140,34 @@ export default function TodoSlot(props: Props) {
           </div>
         </div>
       ) : state === "done" ? (
-        <div className="flex min-h-12 mt-12 flex-col items-center justify-center rounded-xl border-2 border-green-500/30 bg-green-500/10 px-4 py-6 text-center transition-all duration-300 hover:border-green-500/50 hover:bg-green-500/15">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-green-500/20 px-4 py-2 text-sm font-semibold text-green-600 dark:text-green-400">
-            <HugeiconsIcon icon={CheckmarkCircle02Icon} size={20} className="transition-transform hover:scale-110" />
-            Done
+        <div className="flex flex-1 min-h-0 flex-col">
+          <div
+            className="flex min-h-full flex-col items-center justify-center rounded-xl border-2 px-4 py-6 text-center transition-all duration-300"
+            style={{
+              borderColor: "var(--gaia-positive-border)",
+              backgroundColor: "var(--gaia-positive-bg)",
+            }}
+          >
+            <div
+              className="mb-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[var(--gaia-text-strong)]"
+              style={{
+                backgroundColor: "color-mix(in srgb, var(--gaia-positive) 22%, transparent)",
+              }}
+            >
+              <HugeiconsIcon icon={CheckmarkCircle02Icon} size={20} className="transition-transform hover:scale-110" />
+              Done
+            </div>
+            <p className="text-lg font-semibold text-[var(--gaia-text-strong)]">
+              {completedTitle ?? "All done!"}
+            </p>
+            <p className="mt-2 text-sm text-[var(--gaia-text-default)]">
+              We'll surface tomorrow's tasks automatically.
+            </p>
           </div>
-          <p className="text-lg font-semibold text-[var(--gaia-text-strong)]">
-            {completedTitle ?? "All done!"}
-          </p>
-          <p className="mt-2 text-sm text-[var(--gaia-text-muted)]">
-            We'll surface tomorrow's tasks automatically.
-          </p>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-[12rem]">
-          <div className="mb-4 py-2 text-center text-sm text-[var(--gaia-text-muted)]">
+          <div className="mb-4 py-2 text-center text-sm text-[var(--gaia-text-default)]">
             {labelOf(category)} — No task today
           </div>
           {!showAdd ? (
@@ -215,29 +231,35 @@ function formatDueBadge(dateStr?: string | null, todayStr?: string) {
 }
 
 function categoryIcon(c: Category) {
+  const iconColor =
+    c === "life"
+      ? "var(--gaia-positive)"
+      : c === "work"
+        ? "var(--gaia-info)"
+        : "var(--gaia-warning)";
   if (c === "life")
     return (
-      <HugeiconsIcon 
-        icon={HeartAddIcon} 
-        size={22} 
-        color="#14b8a6" 
+      <HugeiconsIcon
+        icon={HeartAddIcon}
+        size={22}
+        color={iconColor}
         className="transition-all duration-300 hover:scale-125 hover:drop-shadow-lg"
       />
     );
   if (c === "work")
     return (
-      <HugeiconsIcon 
-        icon={Briefcase02Icon} 
-        size={22} 
-        color="#6366f1"
+      <HugeiconsIcon
+        icon={Briefcase02Icon}
+        size={22}
+        color={iconColor}
         className="transition-all duration-300 hover:scale-125 hover:drop-shadow-lg"
       />
     );
   return (
-    <HugeiconsIcon 
-      icon={GameController02Icon} 
-      size={22} 
-      color="#f59e0b"
+    <HugeiconsIcon
+      icon={GameController02Icon}
+      size={22}
+      color={iconColor}
       className="transition-all duration-300 hover:scale-125 hover:drop-shadow-lg"
     />
   );

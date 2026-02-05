@@ -17,7 +17,7 @@ export default function Sparkline({
   height = 64,
   className,
 }: SparklineProps) {
-  if (!points.length) return <div className="text-sm gaia-muted">No data</div>;
+  if (!points.length) return <div className="text-sm text-[var(--gaia-text-default)]">No data</div>;
 
   const min = Math.min(...points);
   const max = Math.max(...points);

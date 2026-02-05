@@ -23,10 +23,10 @@ export default function DashboardPage() {
 
       <div className="mx-auto max-w-6xl space-y-4 p-4 pt-20 [padding-left:max(1rem,env(safe-area-inset-left))] [padding-right:max(1rem,env(safe-area-inset-right))] [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-extrabold tracking-wide">Dashboard</h1>
+          <h1 className="text-2xl font-extrabold tracking-wide text-[var(--gaia-text-strong)]">Dashboard</h1>
           <a
             href="/dashboard/calendars"
-            className="gaia-glass-strong gaia-border inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium hover:opacity-90"
+            className="gaia-glass-strong gaia-border inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium text-[var(--gaia-text-default)] hover:opacity-90"
           >
             Calendars →
           </a>
@@ -36,15 +36,15 @@ export default function DashboardPage() {
 
         <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
           <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide gaia-muted">Recent activity</h2>
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">Recent activity</h2>
             <ActivityFeed />
           </section>
           <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide gaia-muted">Wealth</h2>
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">Wealth</h2>
             <WealthSpark />
           </section>
           <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide gaia-muted">Weight</h2>
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">Weight</h2>
             <WeightSpark />
           </section>
         </div>

@@ -36,7 +36,7 @@ const InstagramPage: React.FC = () => {
     <PageTransition>
       <main className="min-h-screen bg-white">
         <section className="mx-auto max-w-[1600px] px-4 py-6">
-          <div className="columns-3 gap-4">
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
             {visibleItems.map((item) => (
               <InstagramPost
                 key={item.id}

@@ -4,23 +4,29 @@ import { getR2Url, getR2PreviewUrl } from "../r2";
 
 const PLACEHOLDER = "/gaia-intro-1.png";
 
-function getDisplayImageUrl(item: MediaItem): string {
+/** Thumbnail/image URL for the card, or null if we should use video first frame. */
+function getDisplayImageUrl(item: MediaItem): string | null {
   if (item.type === "image") {
     if (item.r2Path) return getR2Url(item.r2Path);
     if (item.localPath) return item.localPath;
     if (item.src) return item.src;
+    return PLACEHOLDER;
   }
   if (item.type === "video" && item.thumbnails?.length) {
     const t = item.thumbnails[0];
     if (t.localPath) return t.localPath;
-    if (t.r2Key) return getR2PreviewUrl(t.r2Key);
+    if (t.r2Key && item.source !== "local_video") return getR2PreviewUrl(t.r2Key);
   }
-  if (item.type === "video") {
-    if (item.r2Path) return getR2Url(item.r2Path);
-    if (item.localPath) return item.localPath;
-    if (item.src) return item.src;
-  }
-  return PLACEHOLDER;
+  return null;
+}
+
+/** Video src URL for first-frame preview when there is no thumbnail. */
+function getVideoPreviewSrc(item: MediaItem): string | null {
+  if (item.type !== "video") return null;
+  if (item.r2Path) return getR2Url(item.r2Path);
+  if (item.localPath) return item.localPath;
+  if (item.src && !item.embedUrl) return item.src;
+  return null;
 }
 
 interface InstagramPostProps {
@@ -30,8 +36,11 @@ interface InstagramPostProps {
 
 const InstagramPost: React.FC<InstagramPostProps> = ({ item, onMediaClick }) => {
   const title = item.title || "Untitled";
-  const src = getDisplayImageUrl(item);
+  const thumbUrl = getDisplayImageUrl(item);
+  const videoSrc = getVideoPreviewSrc(item);
   const isVideo = item.type === "video";
+  /** For videos with no thumbnail, show first frame via <video>; otherwise show thumbnail image. */
+  const useVideoPreview = isVideo && !thumbUrl && videoSrc;
 
   const handleCardClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -56,19 +65,31 @@ const InstagramPost: React.FC<InstagramPostProps> = ({ item, onMediaClick }) => 
       >
         {/* Full width, natural height per image/video (masonry) */}
         <div className="relative w-full overflow-hidden rounded-t-lg bg-gray-100">
-          <img
-            src={src}
-            alt={title}
-            className="block w-full"
-            style={{ height: "auto", display: "block", verticalAlign: "middle" }}
-            onError={(e) => {
-              const target = e.currentTarget;
-              if (target.src !== PLACEHOLDER) {
-                target.src = PLACEHOLDER;
-                target.onerror = null;
-              }
-            }}
-          />
+          {useVideoPreview ? (
+            <video
+              src={videoSrc}
+              className="block w-full"
+              style={{ height: "auto", display: "block", verticalAlign: "middle" }}
+              muted
+              playsInline
+              preload="metadata"
+              aria-label={title}
+            />
+          ) : (
+            <img
+              src={thumbUrl ?? PLACEHOLDER}
+              alt={title}
+              className="block w-full"
+              style={{ height: "auto", display: "block", verticalAlign: "middle" }}
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== PLACEHOLDER) {
+                  target.src = PLACEHOLDER;
+                  target.onerror = null;
+                }
+              }}
+            />
+          )}
 
           {/* Top-left: Edit (image) or Play (video) icon */}
           <div className="absolute left-2 top-2">
@@ -123,7 +144,7 @@ const InstagramPost: React.FC<InstagramPostProps> = ({ item, onMediaClick }) => 
               </p>
             </div>
             <a
-              href={src}
+              href={videoSrc ?? thumbUrl ?? PLACEHOLDER}
               download
               target="_blank"
               rel="noopener noreferrer"

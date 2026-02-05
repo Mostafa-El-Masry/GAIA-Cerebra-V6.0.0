@@ -408,7 +408,6 @@ async function collectEmbedsFromSupabase(): Promise<ManifestItem[]> {
 
 export async function GET() {
   const publicDir = path.join(process.cwd(), "public");
-  const imageDir = path.join(publicDir, "media", "images");
   const videoDir = path.join(publicDir, "media", "videos");
   const previewDir = path.join(publicDir, "media", "previews");
 
@@ -432,10 +431,8 @@ export async function GET() {
     r2Data?.previewMap ?? null
   );
 
-  const [localImages = [], localVideos = [], embeds = []] = await Promise.all([
-    collectMedia(imageDir, "media/images", "image", IMG_EXTS).catch(
-      () => [] as ManifestItem[]
-    ),
+  // Only collect local videos from media folder; no local images from public.
+  const [localVideos = [], embeds = []] = await Promise.all([
     collectMedia(videoDir, "media/videos", "video", VID_EXTS, {
       previewMap: mergedPreviewMap,
     }).catch(() => [] as ManifestItem[]),
@@ -443,36 +440,27 @@ export async function GET() {
   ]);
 
   const merged = new Map<string, ManifestItem>();
-  // Start with R2 items (keeps cloud-only assets), then layer in locals so
-  // videos can stream from disk while still borrowing R2 previews.
+  // R2: include both videos and images (pictures from R2 only; no local images).
   r2Items.forEach((item) => merged.set(item.id, item));
   embeds.forEach((item) => merged.set(item.id, item));
 
-  [...localImages, ...localVideos].forEach((item) => {
+  localVideos.forEach((item) => {
     const existing = merged.get(item.id);
     if (!existing) {
       merged.set(item.id, item);
       return;
     }
-
-    if (item.type === "video") {
-      merged.set(item.id, {
-        ...existing,
-        ...item,
-        preview:
-          (item as ManifestItem).preview?.length
-            ? item.preview
-            : existing.preview,
-      });
-      return;
-    }
-
-    // For images, keep the cloud copy when it already exists; otherwise use local.
-    if (existing.type !== "image") {
-      merged.set(item.id, item);
-    }
+    merged.set(item.id, {
+      ...existing,
+      ...item,
+      preview:
+        (item as ManifestItem).preview?.length
+          ? item.preview
+          : existing.preview,
+    });
   });
 
+  // Feed: videos (local + R2 + embeds) and images from R2 only (no local images).
   const items = Array.from(merged.values()).sort((a, b) =>
     a.addedAt < b.addedAt ? 1 : -1
   );

@@ -1,10 +1,36 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { MediaItem } from "../mediaTypes";
 import { getR2Url, getR2PreviewUrl } from "../r2";
 
 const FALLBACK_IMAGE = "/gaia-intro-1.png";
+const LIGHTBOX_STORAGE_KEY = "gaia_lightbox_media";
+
+type SavedMediaState = { position: number; volume: number; muted: boolean };
+
+function getSavedState(itemId: string): SavedMediaState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(`${LIGHTBOX_STORAGE_KEY}_${itemId}`);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as SavedMediaState;
+    if (typeof data.position !== "number" || typeof data.volume !== "number" || typeof data.muted !== "boolean")
+      return null;
+    return { position: data.position, volume: data.volume, muted: data.muted };
+  } catch {
+    return null;
+  }
+}
+
+function saveState(itemId: string, state: SavedMediaState) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(`${LIGHTBOX_STORAGE_KEY}_${itemId}`, JSON.stringify(state));
+  } catch {
+    // ignore
+  }
+}
 
 function getMediaSrc(item: MediaItem): string {
   if (item.type === "image") {
@@ -49,6 +75,41 @@ export function PexelsLightbox({
   hasPrev,
   hasNext,
 }: PexelsLightboxProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const savePositionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [cardPosition, setCardPosition] = useState<{ x: number; y: number } | null>(null);
+  const dragRef = useRef<{ startX: number; startY: number; startLeft: number; startTop: number } | null>(null);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const rect = (e.target as HTMLElement).closest("[data-lightbox-card]")?.getBoundingClientRect();
+    if (!rect) return;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    dragRef.current = { startX: e.clientX, startY: e.clientY, startLeft: centerX, startTop: centerY };
+  }, []);
+
+  useEffect(() => {
+    if (!dragRef.current) return;
+    const onMove = (e: MouseEvent) => {
+      if (!dragRef.current) return;
+      const dx = e.clientX - dragRef.current.startX;
+      const dy = e.clientY - dragRef.current.startY;
+      setCardPosition({ x: dragRef.current.startLeft + dx, y: dragRef.current.startTop + dy });
+    };
+    const onUp = () => {
+      dragRef.current = null;
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [item?.id]);
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -66,6 +127,15 @@ export function PexelsLightbox({
     };
   }, [item]);
 
+  useEffect(() => {
+    return () => {
+      if (savePositionTimeoutRef.current) {
+        clearTimeout(savePositionTimeoutRef.current);
+        savePositionTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
   if (!item) return null;
 
   const title = item.title || "Untitled";
@@ -77,9 +147,14 @@ export function PexelsLightbox({
       ? item.thumbnails[0].localPath ?? (item.thumbnails[0].r2Key ? getR2PreviewUrl(item.thumbnails[0].r2Key) : undefined)
       : undefined;
 
+  const isCentered = cardPosition === null;
+  const cardStyle = isCentered
+    ? undefined
+    : { left: cardPosition.x, top: cardPosition.y, transform: "translate(-50%, -50%)" };
+
   return (
     <div
-      className="z-[9999] flex items-center justify-center overflow-y-auto bg-neutral-900/95 p-4"
+      className="z-[9999] flex items-center justify-center overflow-y-auto p-4"
       style={{
         position: "fixed",
         top: 0,
@@ -93,56 +168,63 @@ export function PexelsLightbox({
       aria-label="Media preview"
       onClick={onClose}
     >
-      {/* Close button - top right of screen */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
-        aria-label="Close"
-      >
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      {/* Previous / Next - large arrows on sides of card */}
-      {hasPrev && onPrev && (
-        <button
-          type="button"
-          onClick={onPrev}
-          className="absolute left-2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-700/90 text-white hover:bg-neutral-600 md:left-4"
-          aria-label="Previous"
-        >
-          <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      )}
-      {hasNext && onNext && (
-        <button
-          type="button"
-          onClick={onNext}
-          className="absolute right-2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-700/90 text-white hover:bg-neutral-600 md:right-4"
-          aria-label="Next"
-        >
-          <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      )}
-
-      {/* Centered white card (Pexels-style) */}
       <div
-        className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl"
+        data-lightbox-card
+        className="relative flex max-h-[75vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl"
+        style={{
+          ...(isCentered ? {} : { position: "fixed", margin: 0 }),
+          ...cardStyle,
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top bar: creator (left) + actions (right) */}
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-gray-100 px-4 py-3">
-          <div className="flex min-w-0 items-center gap-3">
+        {/* Top bar: drag handle (left) + close/prev/next + actions (right) */}
+        <div className="flex shrink-0 cursor-grab active:cursor-grabbing items-center justify-between gap-4 border-b border-gray-100 px-4 py-3">
+          <div
+            className="flex min-w-0 select-none items-center gap-3"
+            onMouseDown={handleDragStart}
+            role="button"
+            aria-label="Drag to move"
+          >
             <div className="h-9 w-9 shrink-0 rounded-full bg-gray-200" aria-hidden />
             <div className="min-w-0">
               <p className="truncate font-medium text-gray-900">GAIA Gallery</p>
             </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            {hasPrev && onPrev && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onPrev(); }}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                aria-label="Previous"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+            {hasNext && onNext && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onNext(); }}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                aria-label="Next"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onClose(); }}
+              className="ml-1 flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              aria-label="Close"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <button
@@ -177,30 +259,64 @@ export function PexelsLightbox({
           </div>
         </div>
 
-        {/* Media: full width, adaptive height; contained so video controls don't overlap bottom bar */}
-        <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
+        {/* Media: image/video fills the area at full size (object-contain = no crop) */}
+        <div className="relative flex min-h-0 flex-1 items-stretch justify-center overflow-hidden bg-black">
           {isVideo && (item.embedUrl || item.embedHtml) ? (
             <div
-              className="aspect-video w-full"
+              className="aspect-video w-full max-h-full"
               dangerouslySetInnerHTML={{
                 __html: item.embedHtml ?? `<iframe src="${item.embedUrl}" allowfullscreen class="h-full w-full" />`,
               }}
             />
           ) : isVideo ? (
-            <div className="flex aspect-video w-full items-center justify-center overflow-hidden bg-black">
-              <video
-                src={item.r2Path ? getR2Url(item.r2Path) : item.localPath ?? item.src ?? ""}
-                poster={posterUrl ?? FALLBACK_IMAGE}
-                controls
-                className="max-h-full max-w-full object-contain"
-                preload="metadata"
-              />
-            </div>
+            <video
+              ref={videoRef}
+              src={item.r2Path ? getR2Url(item.r2Path) : item.localPath ?? item.src ?? ""}
+              poster={posterUrl ?? FALLBACK_IMAGE}
+              controls
+              muted
+              className="h-full w-full object-contain"
+              preload="metadata"
+              onCanPlay={() => {
+                const video = videoRef.current;
+                if (!video || item.type !== "video") return;
+                const saved = getSavedState(item.id);
+                const position = saved?.position ?? 0;
+                const volume = saved?.volume ?? 1;
+                const muted = saved?.muted ?? true;
+                if (position > 0 && position < video.duration) video.currentTime = position;
+                video.volume = Math.max(0, Math.min(1, volume));
+                video.muted = muted;
+                video.play().catch(() => {});
+              }}
+              onTimeUpdate={() => {
+                const video = videoRef.current;
+                if (!video || item.type !== "video") return;
+                if (savePositionTimeoutRef.current) return;
+                savePositionTimeoutRef.current = setTimeout(() => {
+                  savePositionTimeoutRef.current = null;
+                  saveState(item.id, {
+                    position: video.currentTime,
+                    volume: video.volume,
+                    muted: video.muted,
+                  });
+                }, 1000);
+              }}
+              onVolumeChange={() => {
+                const video = videoRef.current;
+                if (!video || item.type !== "video") return;
+                saveState(item.id, {
+                  position: video.currentTime,
+                  volume: video.volume,
+                  muted: video.muted,
+                });
+              }}
+            />
           ) : (
             <img
               src={mediaSrc}
               alt={title}
-              className="block h-auto w-full object-contain"
+              className="h-full w-full object-contain object-center"
               onError={(e) => {
                 const t = e.currentTarget;
                 if (t.src !== FALLBACK_IMAGE) {
@@ -210,7 +326,6 @@ export function PexelsLightbox({
               }}
             />
           )}
-
         </div>
 
         {/* Bottom bar: above video layer so it's never covered by native controls */}

@@ -1,47 +1,7 @@
 import { MediaItem } from "./mediaTypes";
 
+/** Fallback items: videos only (no local/public images). */
 export const mockMediaItems: MediaItem[] = [
-  {
-    id: "img-1",
-    slug: "egypt-nile-sunset",
-    type: "image",
-    title: "Nile Sunset · Cairo",
-    description: "Warm sunset over the Nile – quiet and powerful.",
-    tags: ["trip", "egypt", "sunset", "power"],
-    source: "local_image",
-    src: "/gaia-intro-1.png",
-    localPath: "/gaia-intro-1.png",
-    createdAt: "2024-02-10T18:30:00.000Z",
-    updatedAt: "2024-02-10T18:30:00.000Z",
-    isFavorite: true,
-  },
-  {
-    id: "img-2",
-    slug: "desk-setup-night",
-    type: "image",
-    title: "Night Desk Setup",
-    description: "Coding corner at 2AM – GAIA planning session.",
-    tags: ["work", "night", "gaia"],
-    source: "local_image",
-    src: "/gaia-intro2.png",
-    localPath: "/gaia-intro2.png",
-    createdAt: "2024-03-02T22:15:00.000Z",
-    updatedAt: "2024-03-02T22:15:00.000Z",
-  },
-  {
-    id: "img-3",
-    slug: "family-dinner",
-    type: "image",
-    title: "Family Dinner",
-    description: "Simple dinner, loud laughs.",
-    tags: ["family", "memory"],
-    source: "local_image",
-    src: "/gaia-intro3.png",
-    localPath: "/gaia-intro3.png",
-    createdAt: "2023-12-25T19:45:00.000Z",
-    updatedAt: "2023-12-25T19:45:00.000Z",
-    isFavorite: true,
-  },
   {
     id: "vid-1",
     slug: "egypt-trip-walk",

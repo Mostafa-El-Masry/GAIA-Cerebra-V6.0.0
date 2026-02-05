@@ -51,7 +51,7 @@ export default function ActivityFeed() {
   }, []);
 
   if (!rows.length)
-    return <div className="text-sm gaia-muted">No recent activity.</div>;
+    return <div className="text-sm text-[var(--gaia-text-default)]">No recent activity.</div>;
 
   return (
     <div className="grid gap-2">
@@ -62,7 +62,7 @@ export default function ActivityFeed() {
           className="flex items-center justify-between rounded border border-black/10 px-3 py-2 text-sm hover:border-black/30"
         >
           <span className="truncate">{r.key}</span>
-          <span className="gaia-muted">
+          <span className="text-[var(--gaia-text-default)]">
             {new Date(r.when).toLocaleString()}
           </span>
         </a>
