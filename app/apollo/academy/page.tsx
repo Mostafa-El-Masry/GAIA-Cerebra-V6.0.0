@@ -12,8 +12,29 @@ type PathItem = {
   lessons: LessonItem[];
 };
 
+type DashboardData = {
+  lastVisited: {
+    pathId: string;
+    lessonId: string;
+    pathName: string;
+    title: string | null;
+    openedAt: string;
+  } | null;
+  currentScheduled: {
+    pathId: string;
+    lessonId: string;
+    pathName: string;
+    title: string | null;
+    date: string;
+    status: "completed" | "incomplete";
+  } | null;
+  calendarStart: string;
+  calendarEnd: string;
+};
+
 export default function AcademyDashboardPage() {
   const [paths, setPaths] = useState<PathItem[]>([]);
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -34,9 +55,29 @@ export default function AcademyDashboardPage() {
     }
   }, []);
 
+  const fetchDashboard = useCallback(async () => {
+    try {
+      const res = await fetch("/api/apollo/academy/dashboard");
+      if (!res.ok) return;
+      const data = (await res.json()) as DashboardData;
+      setDashboard(data);
+    } catch {
+      setDashboard(null);
+    }
+  }, []);
+
+  const refreshAll = useCallback(() => {
+    fetchPaths();
+    fetchDashboard();
+  }, [fetchPaths, fetchDashboard]);
+
   useEffect(() => {
     fetchPaths();
   }, [fetchPaths]);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
 
   const handleDelete = useCallback(
     async (pathId: string, lessonId: string) => {
@@ -52,14 +93,14 @@ export default function AcademyDashboardPage() {
           const err = (await res.json().catch(() => ({}))) as { error?: string };
           throw new Error(err.error ?? "Delete failed");
         }
-        await fetchPaths();
+        await refreshAll();
       } catch (e) {
         setError(e instanceof Error ? e.message : "Delete failed");
       } finally {
         setDeleting(null);
       }
     },
-    [fetchPaths],
+    [refreshAll],
   );
 
   const handleToggleComplete = useCallback(
@@ -73,14 +114,14 @@ export default function AcademyDashboardPage() {
           body: JSON.stringify({ pathId, lessonId, completed }),
         });
         if (!res.ok) throw new Error("Update failed");
-        await fetchPaths();
+        await refreshAll();
       } catch (e) {
         setError(e instanceof Error ? e.message : "Update failed");
       } finally {
         setToggling(null);
       }
     },
-    [fetchPaths],
+    [refreshAll],
   );
 
   if (loading && paths.length === 0) {
@@ -106,6 +147,81 @@ export default function AcademyDashboardPage() {
         </div>
       )}
 
+      {/* Dashboard (read-only): last visited + current scheduled */}
+      <section className="mb-8 rounded-xl border gaia-border bg-[var(--gaia-surface)] p-4 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)] mb-3">
+          Dashboard
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-lg border gaia-border bg-[var(--gaia-surface-soft)] p-3">
+            <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
+              Last lesson visited
+            </p>
+            {dashboard?.lastVisited ? (
+              <>
+                <p className="mt-1 font-medium text-[var(--gaia-text-strong)]">
+                  {dashboard.lastVisited.title ?? dashboard.lastVisited.lessonId}
+                </p>
+                <p className="text-sm text-[var(--gaia-text-muted)]">
+                  {dashboard.lastVisited.pathName}
+                </p>
+                <p className="text-xs text-[var(--gaia-text-muted)]">
+                  {new Date(dashboard.lastVisited.openedAt).toLocaleString()}
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-[var(--gaia-text-muted)]">
+                None yet
+              </p>
+            )}
+          </div>
+          <div className="rounded-lg border gaia-border bg-[var(--gaia-surface-soft)] p-3">
+            <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
+              Current scheduled lesson
+            </p>
+            {dashboard?.currentScheduled ? (
+              <>
+                <p className="mt-1 font-medium text-[var(--gaia-text-strong)]">
+                  {dashboard.currentScheduled.title ??
+                    dashboard.currentScheduled.lessonId}
+                </p>
+                <p className="text-sm text-[var(--gaia-text-muted)]">
+                  {dashboard.currentScheduled.pathName} ·{" "}
+                  {dashboard.currentScheduled.date}
+                </p>
+                <p
+                  className={`text-xs font-semibold ${
+                    dashboard.currentScheduled.status === "completed"
+                      ? "text-emerald-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {dashboard.currentScheduled.status === "completed"
+                    ? "Completed"
+                    : "Incomplete"}
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-[var(--gaia-text-muted)]">
+                No upcoming study day in range
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <p className="mb-4 text-sm text-[var(--gaia-text-muted)]">
+        Use the{" "}
+        <Link
+          href="/dashboard/calendars"
+          className="font-medium text-[var(--gaia-text-strong)] underline hover:no-underline"
+        >
+          Learning calendar
+        </Link>{" "}
+        on the dashboard to see study days (Mar 1–Dec 31 2026).
+      </p>
+
+      {/* Paths and lessons */}
       <div className="space-y-6">
         {paths.map((path) => (
           <section

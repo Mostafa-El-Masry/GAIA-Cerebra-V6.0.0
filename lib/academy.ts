@@ -10,6 +10,7 @@ import path from "path";
 const PATHS_DIR = path.join(process.cwd(), "Academy", "lessons");
 /** Completion state stays in data/academy so it remains writable. */
 const COMPLETED_FILE = path.join(process.cwd(), "data", "academy", "completed.json");
+const LAST_VISITED_FILE = path.join(process.cwd(), "data", "academy", "last-visited.json");
 
 export const PATH_IDS = [
   "self-healing",
@@ -98,8 +99,47 @@ export function getLessonContent(pathId: PathId, lessonId: string): string | nul
   return fs.readFileSync(filePath, "utf-8");
 }
 
+/** First line of lesson file (e.g. "# Title") stripped to title only. */
+export function getLessonTitle(pathId: PathId, lessonId: string): string | null {
+  const content = getLessonContent(pathId, lessonId);
+  if (!content) return null;
+  const firstLine = content.split("\n")[0]?.trim() ?? "";
+  return firstLine.replace(/^#+\s*/, "").trim() || null;
+}
+
 export function getPathDisplayName(pathId: PathId): string {
   return PATH_DISPLAY_NAMES[pathId];
+}
+
+export type LastVisited = { pathId: PathId; lessonId: string; openedAt: string };
+
+function readLastVisited(): LastVisited | null {
+  try {
+    const raw = fs.readFileSync(LAST_VISITED_FILE, "utf-8");
+    return JSON.parse(raw) as LastVisited;
+  } catch {
+    return null;
+  }
+}
+
+function writeLastVisited(data: LastVisited): void {
+  fs.mkdirSync(path.dirname(LAST_VISITED_FILE), { recursive: true });
+  fs.writeFileSync(LAST_VISITED_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+/** Get last visited lesson (path, lesson id, timestamp). */
+export function getLastVisited(): LastVisited | null {
+  return readLastVisited();
+}
+
+/** Record that a lesson was opened and mark it completed. */
+export function recordLessonOpened(pathId: PathId, lessonId: string): void {
+  markCompleted(pathId, lessonId);
+  writeLastVisited({
+    pathId,
+    lessonId,
+    openedAt: new Date().toISOString(),
+  });
 }
 
 export type PathInfo = {

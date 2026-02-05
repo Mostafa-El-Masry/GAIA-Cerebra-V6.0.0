@@ -2,6 +2,8 @@
   "self-healing": [
     "intro"
   ],
-  "web-fundamentals": [],
+  "web-fundamentals": [
+    "lesson-01"
+  ],
   "financial-literacy": []
 }

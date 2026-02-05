@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getLessonContent, getPathDisplayName } from "@/lib/academy";
+import { getLessonContent, getPathDisplayName, recordLessonOpened } from "@/lib/academy";
 import type { PathId } from "@/lib/academy";
 
 const VALID_PATH_IDS: PathId[] = [
@@ -35,6 +35,8 @@ export async function GET(req: Request) {
         { status: 404 },
       );
     }
+
+    recordLessonOpened(pathId, lessonId.trim());
 
     const pathName = getPathDisplayName(pathId);
     return NextResponse.json({
