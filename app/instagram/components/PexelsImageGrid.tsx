@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import type { MediaItem } from "../mediaTypes";
 import { PexelsImageCard } from "./PexelsImageCard";
-import { PexelsLightbox } from "./PexelsLightbox";
+import { GlobalLightbox } from "@/app/lightbox";
 
 type PexelsImageGridProps = {
   items: MediaItem[];
@@ -34,16 +34,15 @@ export function PexelsImageGrid({ items, title }: PexelsImageGridProps) {
           </div>
         ))}
       </div>
-      {lightboxItem && (
-        <PexelsLightbox
-          item={lightboxItem}
-          onClose={closeLightbox}
-          onPrev={goPrev}
-          onNext={goNext}
-          hasPrev={hasPrev}
-          hasNext={hasNext}
-        />
-      )}
+      <GlobalLightbox
+        isOpen={!!lightboxItem}
+        activeImage={lightboxItem}
+        onClose={closeLightbox}
+        onPrev={goPrev}
+        onNext={goNext}
+        hasPrev={hasPrev}
+        hasNext={hasNext}
+      />
     </section>
   );
 }

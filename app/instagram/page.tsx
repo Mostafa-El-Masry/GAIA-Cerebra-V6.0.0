@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { createPortal } from "react-dom";
 import { PageTransition } from "./components/PageTransition";
 import InstagramPost from "./components/InstagramPost";
-import { PexelsLightbox } from "./components/PexelsLightbox";
+import { GlobalLightbox } from "@/app/lightbox";
 import { useInstagramData } from "./hooks/useInstagramData";
 
 const INITIAL_COUNT = 21;
@@ -58,19 +57,15 @@ const InstagramPage: React.FC = () => {
           )}
         </section>
       </main>
-      {lightboxItem &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <PexelsLightbox
-            item={lightboxItem}
-            onClose={() => setLightboxItem(null)}
-            onPrev={goPrev}
-            onNext={goNext}
-            hasPrev={hasPrev}
-            hasNext={hasNext}
-          />,
-          document.body
-        )}
+      <GlobalLightbox
+        isOpen={!!lightboxItem}
+        activeImage={lightboxItem}
+        onClose={() => setLightboxItem(null)}
+        onPrev={goPrev}
+        onNext={goNext}
+        hasPrev={hasPrev}
+        hasNext={hasNext}
+      />
     </PageTransition>
   );
 };
