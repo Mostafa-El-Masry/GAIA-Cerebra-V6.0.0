@@ -10,10 +10,8 @@
 | `components/TodoQuickAdd.tsx` | Quick-add todo UI |
 | `components/TodoSlot.tsx` | Single todo slot |
 | `hooks/useTodoDaily.ts` | Hook for daily todos |
-| `widgets/ActivityFeed.tsx` | Activity feed widget |
 | `widgets/Sparkline.tsx` | Sparkline widget |
 | `widgets/WealthSpark.tsx` | Wealth sparkline |
-| `widgets/WeightSpark.tsx` | Weight sparkline |
 | `calendars/page.tsx` | Calendars sub-route |
 
 ## What imports them

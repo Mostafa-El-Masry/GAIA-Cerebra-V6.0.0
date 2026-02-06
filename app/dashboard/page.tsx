@@ -1,9 +1,8 @@
 "use client";
 
 import TodoDaily from "./components/TodoDaily";
-import ActivityFeed from "./widgets/ActivityFeed";
+import TodayLearning from "./widgets/TodayLearning";
 import WealthSpark from "./widgets/WealthSpark";
-import WeightSpark from "./widgets/WeightSpark";
 
 /**
  * Dashboard Page
@@ -34,20 +33,17 @@ export default function DashboardPage() {
 
         <TodoDaily />
 
-        <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
-          <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">Recent activity</h2>
-            <ActivityFeed />
-          </section>
-          <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">Wealth</h2>
-            <WealthSpark />
-          </section>
-          <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">Weight</h2>
-            <WeightSpark />
-          </section>
-        </div>
+        <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">
+            Today&apos;s learning
+          </h2>
+          <TodayLearning />
+        </section>
+
+        <section className="gaia-glass-strong gaia-border rounded-lg border p-4">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[var(--gaia-text-default)]">Wealth</h2>
+          <WealthSpark />
+        </section>
       </div>
     </main>
   );

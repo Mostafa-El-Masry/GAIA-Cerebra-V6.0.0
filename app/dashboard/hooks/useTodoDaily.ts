@@ -162,8 +162,12 @@ export function useTodoDaily() {
       setTasks(merged);
       const current = getTodayInTZ(KUWAIT_TZ);
       const focus = earliestPendingDate(merged, current);
-      setToday(focus);
-      setSelection((prev) => (prev.date === focus ? prev : { date: focus, selected: {} }));
+      // Don't reset to today when user is viewing a future day and there's no overdue work
+      setToday((prev) => (prev > current && focus === current ? prev : focus));
+      setSelection((prev) => {
+        const nextDate = prev.date > current && focus === current ? prev.date : focus;
+        return prev.date === nextDate ? prev : { date: nextDate, selected: {} };
+      });
     } catch (e) {
       console.warn("TODO DB hydrate failed; staying with in-memory state.", e);
     }
@@ -278,6 +282,7 @@ export function useTodoDaily() {
       date: targetDate,
       selected: { ...prev.selected, [category]: base.id },
     }));
+    if (targetDate > currentToday) setToday(targetDate);
 
     try {
       const res = await api<{ task: any }>("/api/todo", {
