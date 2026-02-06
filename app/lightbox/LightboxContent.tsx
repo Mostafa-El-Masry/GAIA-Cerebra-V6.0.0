@@ -111,36 +111,24 @@ export function LightboxContent({
     };
   }, [item?.id]);
 
-  const seekVideo = useCallback((deltaSeconds: number) => {
-    const v = videoRef.current;
-    if (!v || !Number.isFinite(v.duration)) return;
-    v.currentTime = Math.max(0, Math.min(v.duration, v.currentTime + deltaSeconds));
-  }, []);
-
-  // Keyboard: left/right = seek video forward/back 5s when viewing a video; Escape = close.
-  // (On-screen arrow buttons are for previous/next item only.)
+  // Pexels-style: keyboard Left/Right = previous/next item; Escape = close. (Same as on-screen arrows.)
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
         return;
       }
-      const isNativeVideo = item?.type === "video" && !item?.embedUrl && !item?.embedHtml;
-      if (e.key === "ArrowLeft") {
-        if (isNativeVideo && videoRef.current) {
-          seekVideo(-5);
-          e.preventDefault();
-        } else if (hasPrev && onPrev) onPrev();
-      } else if (e.key === "ArrowRight") {
-        if (isNativeVideo && videoRef.current) {
-          seekVideo(5);
-          e.preventDefault();
-        } else if (hasNext && onNext) onNext();
+      if (e.key === "ArrowLeft" && hasPrev && onPrev) {
+        onPrev();
+        e.preventDefault();
+      } else if (e.key === "ArrowRight" && hasNext && onNext) {
+        onNext();
+        e.preventDefault();
       }
     };
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [item, onClose, onPrev, onNext, hasPrev, hasNext, seekVideo]);
+  }, [onClose, onPrev, onNext, hasPrev, hasNext]);
 
   // Reset play-started guard when item changes so we can autoplay the new video.
   useEffect(() => {
