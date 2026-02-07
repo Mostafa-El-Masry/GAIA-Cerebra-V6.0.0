@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-type LessonItem = { id: string; completed: boolean };
+type LessonItem = { id: string; completed: boolean; title?: string | null; requiredMinutes?: number };
 type PathItem = {
   id: string;
   name: string;
@@ -38,7 +38,16 @@ export default function AcademyDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [toggling, setToggling] = useState<string | null>(null);
+  const [expandedPathIds, setExpandedPathIds] = useState<Set<string>>(new Set());
+
+  const togglePath = (pathId: string) => {
+    setExpandedPathIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(pathId)) next.delete(pathId);
+      else next.add(pathId);
+      return next;
+    });
+  };
 
   const fetchPaths = useCallback(async () => {
     setLoading(true);
@@ -103,57 +112,39 @@ export default function AcademyDashboardPage() {
     [refreshAll],
   );
 
-  const handleToggleComplete = useCallback(
-    async (pathId: string, lessonId: string, completed: boolean) => {
-      const key = `${pathId}:${lessonId}`;
-      setToggling(key);
-      try {
-        const res = await fetch("/api/apollo/academy/lessons/complete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pathId, lessonId, completed }),
-        });
-        if (!res.ok) throw new Error("Update failed");
-        await refreshAll();
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Update failed");
-      } finally {
-        setToggling(null);
-      }
-    },
-    [refreshAll],
-  );
-
   if (loading && paths.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-sm text-[var(--gaia-text-muted)]">Loading academy…</p>
+      <div className="min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">
+        <div className="mx-auto max-w-2xl px-4 py-8">
+          <p className="text-sm text-[var(--gaia-text-muted)]">Loading academy…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-xl font-semibold text-[var(--gaia-text-strong)] mb-2">
-        Academy
-      </h1>
-      <p className="text-sm text-[var(--gaia-text-muted)] mb-6">
-        File-driven paths. Progress is completed / total lessons.
-      </p>
+    <div className="min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">
+      <div className="mx-auto max-w-2xl px-4 py-8">
+        <h1 className="text-xl font-semibold text-[var(--gaia-text-strong)] mb-2">
+          Academy
+        </h1>
+        <p className="text-sm text-[var(--gaia-text-muted)] mb-6">
+          File-driven paths. Progress is completed / total lessons.
+        </p>
 
-      {error && (
-        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className="mb-4 rounded-lg border border-[var(--gaia-warning-border)] bg-[var(--gaia-warning-bg)] px-3 py-2 text-sm text-[var(--gaia-warning)]">
+            {error}
+          </div>
+        )}
 
-      {/* Dashboard (read-only): last visited + current scheduled */}
-      <section className="mb-8 rounded-xl border gaia-border bg-[var(--gaia-surface)] p-4 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)] mb-3">
-          Dashboard
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-lg border gaia-border bg-[var(--gaia-surface-soft)] p-3">
+        {/* Dashboard (read-only): last visited + current scheduled */}
+        <section className="mb-8 rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-4 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)] mb-3">
+            Dashboard
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-3">
             <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
               Last lesson visited
             </p>
@@ -174,43 +165,43 @@ export default function AcademyDashboardPage() {
                 None yet
               </p>
             )}
-          </div>
-          <div className="rounded-lg border gaia-border bg-[var(--gaia-surface-soft)] p-3">
-            <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
-              Current scheduled lesson
-            </p>
-            {dashboard?.currentScheduled ? (
-              <>
-                <p className="mt-1 font-medium text-[var(--gaia-text-strong)]">
-                  {dashboard.currentScheduled.title ??
-                    dashboard.currentScheduled.lessonId}
-                </p>
-                <p className="text-sm text-[var(--gaia-text-muted)]">
-                  {dashboard.currentScheduled.pathName} ·{" "}
-                  {dashboard.currentScheduled.date}
-                </p>
-                <p
-                  className={`text-xs font-semibold ${
-                    dashboard.currentScheduled.status === "completed"
-                      ? "text-emerald-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {dashboard.currentScheduled.status === "completed"
-                    ? "Completed"
-                    : "Incomplete"}
-                </p>
-              </>
-            ) : (
-              <p className="mt-1 text-sm text-[var(--gaia-text-muted)]">
-                No upcoming study day in range
+            </div>
+            <div className="rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-3">
+              <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
+                Current scheduled lesson
               </p>
-            )}
+              {dashboard?.currentScheduled ? (
+                <>
+                  <p className="mt-1 font-medium text-[var(--gaia-text-strong)]">
+                    {dashboard.currentScheduled.title ??
+                      dashboard.currentScheduled.lessonId}
+                  </p>
+                  <p className="text-sm text-[var(--gaia-text-muted)]">
+                    {dashboard.currentScheduled.pathName} ·{" "}
+                    {dashboard.currentScheduled.date}
+                  </p>
+                  <p
+                    className={`text-xs font-semibold ${
+                      dashboard.currentScheduled.status === "completed"
+                        ? "text-[var(--gaia-positive)]"
+                        : "text-[var(--gaia-negative)]"
+                    }`}
+                  >
+                    {dashboard.currentScheduled.status === "completed"
+                      ? "Completed"
+                      : "Incomplete"}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-1 text-sm text-[var(--gaia-text-muted)]">
+                  No upcoming study day in range
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <p className="mb-4 text-sm text-[var(--gaia-text-muted)]">
+        <p className="mb-4 text-sm text-[var(--gaia-text-muted)]">
         Use the{" "}
         <Link
           href="/dashboard/calendars"
@@ -219,74 +210,89 @@ export default function AcademyDashboardPage() {
           Learning calendar
         </Link>{" "}
         on the dashboard to see study days (Mar 1–Dec 31 2026).
-      </p>
+        </p>
 
-      {/* Paths and lessons */}
-      <div className="space-y-6">
-        {paths.map((path) => (
-          <section
-            key={path.id}
-            className="rounded-xl border gaia-border bg-[var(--gaia-surface)] p-4 shadow-sm"
-          >
-            <div className="flex items-baseline justify-between gap-2 mb-3">
-              <h2 className="text-base font-semibold text-[var(--gaia-text-strong)]">
-                {path.name}
-              </h2>
-              <span className="text-sm text-[var(--gaia-text-muted)] tabular-nums">
-                {path.completedLessons} / {path.totalLessons}
-              </span>
-            </div>
-            {path.lessons.length > 0 ? (
-              <ul className="space-y-1">
-                {path.lessons.map((lesson) => {
-                  const key = `${path.id}:${lesson.id}`;
-                  const isDeleting = deleting === key;
-                  const isToggling = toggling === key;
-                  return (
-                    <li
-                      key={lesson.id}
-                      className="flex items-center justify-between gap-2 rounded-lg border gaia-border bg-[var(--gaia-surface-soft)] px-3 py-2 text-sm"
-                    >
-                      <label className="flex items-center gap-2 min-w-0">
-                        <input
-                          type="checkbox"
-                          checked={lesson.completed}
-                          disabled={isToggling}
-                          onChange={() =>
-                            handleToggleComplete(
-                              path.id,
-                              lesson.id,
-                              !lesson.completed,
-                            )
-                          }
-                          className="rounded border gaia-border"
-                        />
-                        <Link
-                          href={`/apollo/academy/lesson/${path.id}/${lesson.id}`}
-                          className="truncate text-[var(--gaia-text-default)] underline hover:text-[var(--gaia-text-strong)]"
-                        >
-                          {lesson.id}
-                        </Link>
-                      </label>
-                      <button
-                        type="button"
-                        disabled={isDeleting}
-                        onClick={() => handleDelete(path.id, lesson.id)}
-                        className="shrink-0 rounded border border-red-200 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
-                      >
-                        {isDeleting ? "Deleting…" : "Delete"}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="text-sm text-[var(--gaia-text-muted)]">
-                No lessons yet. Add .md files in Academy/lessons/{path.id}/lessons/
-              </p>
-            )}
-          </section>
-        ))}
+        {/* Paths and lessons — click path to expand/collapse */}
+        <div className="space-y-4">
+          {paths.map((path) => {
+            const isExpanded = expandedPathIds.has(path.id);
+            return (
+              <section
+                key={path.id}
+                className="rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] shadow-sm overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => togglePath(path.id)}
+                  className="flex w-full items-center justify-between gap-2 p-4 text-left text-[var(--gaia-text-default)] hover:bg-[var(--gaia-surface)] transition"
+                >
+                <h2 className="text-base font-semibold text-[var(--gaia-text-strong)]">
+                  {path.name}
+                </h2>
+                <span className="flex items-center gap-2 text-sm text-[var(--gaia-text-muted)]">
+                  <span className="tabular-nums">{path.completedLessons} / {path.totalLessons}</span>
+                  <span
+                    className={`inline-block transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    aria-hidden
+                  >
+                    ▼
+                  </span>
+                </span>
+              </button>
+                {isExpanded && (
+                  <div className="border-t border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-4 pt-0">
+                    {path.lessons.length > 0 ? (
+                      <ul className="space-y-1">
+                        {path.lessons.map((lesson) => {
+                          const key = `${path.id}:${lesson.id}`;
+                          const isDeleting = deleting === key;
+                          const duration = lesson.requiredMinutes != null ? `${lesson.requiredMinutes} min` : "15 min";
+                          return (
+                            <li
+                              key={lesson.id}
+                              className="flex items-center justify-between gap-2 rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] px-3 py-2 text-sm text-[var(--gaia-text-default)]"
+                            >
+                            <div className="min-w-0 flex-1">
+                              <Link
+                                href={`/apollo/academy/lesson/${path.id}/${lesson.id}`}
+                                className="truncate font-medium text-[var(--gaia-text-default)] underline hover:text-[var(--gaia-text-strong)]"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {lesson.title ?? lesson.id}
+                              </Link>
+                              <p className="mt-0.5 text-xs text-[var(--gaia-text-muted)]">
+                                {duration}
+                                {lesson.completed && (
+                                  <span className="ml-2 font-medium text-[var(--gaia-positive)]">Completed</span>
+                                )}
+                              </p>
+                            </div>
+                              <button
+                                type="button"
+                                disabled={isDeleting}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(path.id, lesson.id);
+                                }}
+                                className="gaia-btn-negative shrink-0 rounded border px-2 py-1 text-xs font-medium disabled:opacity-50"
+                              >
+                                {isDeleting ? "Deleting…" : "Delete"}
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-[var(--gaia-text-muted)]">
+                        No lessons yet. Add .md files in Academy/lessons/{path.id}/lessons/
+                      </p>
+                    )}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

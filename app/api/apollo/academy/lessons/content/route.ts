@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getLessonContent, getPathDisplayName, recordLessonOpened } from "@/lib/academy";
 import type { PathId } from "@/lib/academy";
+import { getLessonMeta } from "@/lib/academy-db";
 
 const VALID_PATH_IDS: PathId[] = [
   "self-healing",
@@ -8,7 +9,7 @@ const VALID_PATH_IDS: PathId[] = [
   "financial-literacy",
 ];
 
-/** GET ?pathId= &lessonId= — returns lesson markdown content. */
+/** GET ?pathId= &lessonId= — returns lesson content + meta (video_url, required_minutes, completed). No auto-complete. */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -28,7 +29,8 @@ export async function GET(req: Request) {
       );
     }
 
-    const content = getLessonContent(pathId, lessonId.trim());
+    const slug = lessonId.trim();
+    const content = getLessonContent(pathId, slug);
     if (content === null) {
       return NextResponse.json(
         { error: "Lesson not found." },
@@ -36,14 +38,29 @@ export async function GET(req: Request) {
       );
     }
 
-    recordLessonOpened(pathId, lessonId.trim());
+    try {
+      recordLessonOpened(pathId, slug);
+    } catch {
+      // Ignore: last-visited write can fail on read-only FS (e.g. Vercel). Lesson content still returned.
+    }
 
     const pathName = getPathDisplayName(pathId);
+    let meta: Awaited<ReturnType<typeof getLessonMeta>> = null;
+    try {
+      meta = await getLessonMeta(pathId, slug);
+    } catch {
+      // Ignore: DB may be unconfigured or tables missing. Use defaults.
+    }
     return NextResponse.json({
       content,
       pathId,
       pathName,
-      lessonId: lessonId.trim(),
+      lessonId: slug,
+      videoUrl: meta?.videoUrl ?? null,
+      requiredMinutes: meta?.requiredMinutes ?? 15,
+      completed: meta?.completed ?? false,
+      completedAt: meta?.completedAt ?? null,
+      lessonUuid: meta?.lessonUuid ?? null,
     });
   } catch (e) {
     console.error("Academy lesson content error:", e);

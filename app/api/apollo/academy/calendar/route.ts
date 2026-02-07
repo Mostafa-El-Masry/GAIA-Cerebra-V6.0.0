@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import type { PathId } from "@/lib/academy";
 import {
-  getPathsInfo,
+  getPathsInfoWithCompletion,
   getPathDisplayName,
   getLessonTitle,
-  getCompletedIds,
 } from "@/lib/academy";
 import {
   buildSchedule,
@@ -13,7 +12,7 @@ import {
   formatLessonNumber,
 } from "@/lib/academy-calendar";
 
-/** GET ?start=2026-03-01&end=2026-12-31 — calendar entries (study days only in range). */
+/** GET ?start=2026-03-01&end=2026-12-31 — calendar entries. Completion from DB only. */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -27,13 +26,13 @@ export async function GET(req: Request) {
       );
     }
 
-    const paths = getPathsInfo();
+    const paths = await getPathsInfoWithCompletion();
     const lessonsByPath = Object.fromEntries(
       paths.map((p) => [p.id, p.lessons.map((l) => l.id)]),
     ) as Record<PathId, string[]>;
     const schedule = buildSchedule(lessonsByPath);
     const completedByPath = Object.fromEntries(
-      paths.map((p) => [p.id, getCompletedIds(p.id) as string[]]),
+      paths.map((p) => [p.id, p.lessons.filter((l) => l.completed).map((l) => l.id)]),
     );
 
     const entries = schedule

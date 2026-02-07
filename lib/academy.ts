@@ -132,9 +132,8 @@ export function getLastVisited(): LastVisited | null {
   return readLastVisited();
 }
 
-/** Record that a lesson was opened and mark it completed. */
+/** Record that a lesson was opened (last-visited only). Does NOT mark completed — completion is gate-only. */
 export function recordLessonOpened(pathId: PathId, lessonId: string): void {
-  markCompleted(pathId, lessonId);
   writeLastVisited({
     pathId,
     lessonId,
@@ -147,7 +146,7 @@ export type PathInfo = {
   name: string;
   totalLessons: number;
   completedLessons: number;
-  lessons: { id: string; completed: boolean }[];
+  lessons: { id: string; completed: boolean; title?: string | null; requiredMinutes?: number }[];
 };
 
 /** Get dashboard data for all paths. All counts from files + index. */
@@ -159,6 +158,8 @@ export function getPathsInfo(): PathInfo[] {
     const lessons = lessonIds.map((lid) => ({
       id: lid,
       completed: completedSet.has(lid),
+      title: getLessonTitle(id, lid),
+      requiredMinutes: 15,
     }));
     const completedCount = lessons.filter((l) => l.completed).length;
     return {
@@ -169,4 +170,30 @@ export function getPathsInfo(): PathInfo[] {
       lessons,
     };
   });
+}
+
+/** Async: same as getPathsInfo but completion from Supabase only (lesson gate). */
+export async function getPathsInfoWithCompletion(): Promise<PathInfo[]> {
+  const { getCompletedIdsFromDb } = await import("./academy-db");
+  return Promise.all(
+    PATH_IDS.map(async (id) => {
+      const lessonIds = listLessonIds(id);
+      const completedIds = await getCompletedIdsFromDb(id);
+      const completedSet = new Set(completedIds);
+      const lessons = lessonIds.map((lid) => ({
+        id: lid,
+        completed: completedSet.has(lid),
+        title: getLessonTitle(id, lid),
+        requiredMinutes: 15,
+      }));
+      const completedCount = lessons.filter((l) => l.completed).length;
+      return {
+        id,
+        name: PATH_DISPLAY_NAMES[id],
+        totalLessons: lessonIds.length,
+        completedLessons: completedCount,
+        lessons,
+      };
+    }),
+  );
 }

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { getPathsInfo } from "@/lib/academy";
+import { getPathsInfoWithCompletion } from "@/lib/academy";
 
-/** GET: return all paths with file-driven lesson counts and completion. No hardcoded data. */
+/** GET: return all paths with lesson counts and completion (from DB only — lesson gate). */
 export async function GET() {
   try {
-    const paths = getPathsInfo();
+    const paths = await getPathsInfoWithCompletion();
     return NextResponse.json({ paths });
   } catch (e) {
     console.error("Academy paths error:", e);

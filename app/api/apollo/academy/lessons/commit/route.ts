@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { PathId } from "@/lib/academy";
+import { setLessonCompleted } from "@/lib/academy-db";
 
 const VALID_PATH_IDS: PathId[] = [
   "self-healing",
@@ -7,9 +8,9 @@ const VALID_PATH_IDS: PathId[] = [
   "financial-literacy",
 ];
 
-type Body = { pathId?: string; lessonId?: string; completed?: boolean };
+type Body = { pathId?: string; lessonId?: string };
 
-/** POST: rejected. Completion is only via lesson gate (timer + quiz). Use POST /lessons/commit after passing. */
+/** POST: commit lesson completion (irreversible). Only call after timer + quiz 100% in same session. */
 export async function POST(req: Request) {
   try {
     const body = (await req.json().catch(() => ({}))) as Body;
@@ -29,14 +30,18 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json(
-      { error: "Completion is only possible via the lesson page (timer + quiz). No manual toggle." },
-      { status: 400 },
-    );
+    const result = await setLessonCompleted(pathId, String(lessonId).trim());
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: result.error ?? "Failed to commit completion." },
+        { status: 400 },
+      );
+    }
+    return NextResponse.json({ ok: true });
   } catch (e) {
-    console.error("Academy complete toggle error:", e);
+    console.error("Academy commit completion error:", e);
     return NextResponse.json(
-      { error: "Failed to update completion." },
+      { error: "Failed to commit completion." },
       { status: 500 },
     );
   }

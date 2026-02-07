@@ -309,18 +309,30 @@ export default function LearningCalendar({
                           type="button"
                           onClick={handleDayClick}
                           className={`flex h-full w-full flex-col items-center justify-center rounded-md px-0.5 py-1 transition ${
-                            isSelected
-                              ? "bg-[var(--gaia-positive)] text-[var(--gaia-contrast-text)]"
-                              : inViewingMonth
-                                ? "text-[var(--gaia-text-strong)] hover:bg-[var(--gaia-surface-soft)]"
-                                : "text-[var(--gaia-text-muted)] hover:bg-[var(--gaia-surface-soft)]/70"
+                            entry
+                              ? entry.status === "completed"
+                                ? isSelected
+                                  ? "bg-[var(--gaia-positive)] text-[var(--gaia-contrast-text)]"
+                                  : "bg-[var(--gaia-positive-bg)] text-[var(--gaia-positive)] hover:bg-[var(--gaia-positive)]/20"
+                                : isSelected
+                                  ? "bg-red-600 text-white"
+                                  : "bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400"
+                              : isSelected
+                                ? "bg-[var(--gaia-positive)] text-[var(--gaia-contrast-text)]"
+                                : inViewingMonth
+                                  ? "text-[var(--gaia-text-strong)] hover:bg-[var(--gaia-surface-soft)]"
+                                  : "text-[var(--gaia-text-muted)] hover:bg-[var(--gaia-surface-soft)]/70"
                           }`}
                         >
                           <span className="text-xs font-medium leading-tight">{dayNum}</span>
                           {entry && (
                             <span
                               className={`mt-0.5 max-w-full truncate text-[9px] leading-tight ${
-                                isSelected ? "text-[var(--gaia-contrast-text)]/90" : "text-[var(--gaia-text-muted)]"
+                                isSelected && entry.status === "completed"
+                                  ? "text-[var(--gaia-contrast-text)]/90"
+                                  : isSelected && entry.status === "incomplete"
+                                    ? "text-white/90"
+                                    : "text-[var(--gaia-text-muted)]"
                               }`}
                               title={entry.pathName}
                             >
@@ -360,12 +372,12 @@ export default function LearningCalendar({
                     </p>
                     <p className="mt-1 text-sm font-semibold text-[var(--gaia-text-strong)]">
                       {selectedEntry.lessonNumber}
+                      {selectedEntry.title && (
+                        <span className="font-normal text-[var(--gaia-text-default)]">
+                          {" — "}{selectedEntry.title}
+                        </span>
+                      )}
                     </p>
-                    {selectedEntry.title && (
-                      <p className="mt-0.5 text-[11px] text-[var(--gaia-text-muted)] line-clamp-2">
-                        {selectedEntry.title}
-                      </p>
-                    )}
                     <span
                       className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${
                         selectedEntry.status === "completed"

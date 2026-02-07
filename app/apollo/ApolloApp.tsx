@@ -6,7 +6,7 @@ import ApolloStudyGate from "./components/ApolloStudyGate";
 
 export default function ApolloApp() {
   return (
-    <div className="wealth-theme min-h-screen bg-[var(--gaia-surface)] py-6">
+    <div className="min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)] py-6">
       <main className="mx-auto max-w-6xl px-4 sm:px-6 space-y-6">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div className="space-y-2">

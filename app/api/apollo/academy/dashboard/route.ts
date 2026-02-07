@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import {
-  getPathsInfo,
+  getPathsInfoWithCompletion,
   getLastVisited,
   getPathDisplayName,
   getLessonTitle,
-  getCompletedIds,
 } from "@/lib/academy";
 import type { PathId } from "@/lib/academy";
 import {
@@ -13,16 +12,16 @@ import {
   CALENDAR_END,
 } from "@/lib/academy-calendar";
 
-/** GET: dashboard data — last visited lesson + current scheduled lesson. */
+/** GET: dashboard data — last visited lesson + current scheduled lesson. Completion from DB only. */
 export async function GET() {
   try {
-    const paths = getPathsInfo();
+    const paths = await getPathsInfoWithCompletion();
     const lessonsByPath = Object.fromEntries(
       paths.map((p) => [p.id, p.lessons.map((l) => l.id)]),
     ) as Record<PathId, string[]>;
     const schedule = buildSchedule(lessonsByPath);
     const completedByPath = Object.fromEntries(
-      paths.map((p) => [p.id, getCompletedIds(p.id)]),
+      paths.map((p) => [p.id, p.lessons.filter((l) => l.completed).map((l) => l.id)]),
     );
 
     const lastVisited = getLastVisited();
