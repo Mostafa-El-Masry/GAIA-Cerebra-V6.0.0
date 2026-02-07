@@ -48,7 +48,7 @@ export default function WealthShell({ children }: { children: ReactNode }) {
 
   return (
     <div
-      className={`wealth-shell wealth-theme min-h-screen min-h-[100dvh] text-[var(--gaia-text-default)] ${manrope.className}`}
+      className={`min-h-screen min-h-[100dvh] bg-[var(--gaia-surface)] text-[var(--gaia-text-default)] ${manrope.className}`}
     >
       <div className="flex min-h-screen min-h-[100dvh]">
         {/* Mobile: header + drawer */}

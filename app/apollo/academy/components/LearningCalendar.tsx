@@ -293,7 +293,7 @@ export default function LearningCalendar({
                       return (
                         <td
                           key={dateIso}
-                          className="h-12 min-h-12 max-h-12 border-r border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)]/40 align-middle text-center last:border-r-0"
+                          className="h-[10.5rem] min-h-[10.5rem] border-r border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)]/40 align-middle text-center last:border-r-0"
                         />
                       );
                     }
@@ -301,7 +301,7 @@ export default function LearningCalendar({
                     return (
                       <td
                         key={dateIso}
-                        className={`h-12 min-h-12 max-h-12 border-r border-[var(--gaia-border)] align-middle text-center last:border-r-0 ${
+                        className={`h-[10.5rem] min-h-[10.5rem] border-r border-[var(--gaia-border)] align-middle text-center last:border-r-0 ${
                           !inViewingMonth ? "bg-[var(--gaia-surface-soft)]/30" : ""
                         }`}
                       >
@@ -326,18 +326,32 @@ export default function LearningCalendar({
                         >
                           <span className="text-xs font-medium leading-tight">{dayNum}</span>
                           {entry && (
-                            <span
-                              className={`mt-0.5 max-w-full truncate text-[9px] leading-tight ${
-                                isSelected && entry.status === "completed"
-                                  ? "text-[var(--gaia-contrast-text)]/90"
-                                  : isSelected && entry.status === "incomplete"
-                                    ? "text-white/90"
-                                    : "text-[var(--gaia-text-muted)]"
-                              }`}
-                              title={entry.pathName}
-                            >
-                              {entry.pathName}
-                            </span>
+                            <>
+                              <span
+                                className={`mt-0.5 max-w-full truncate text-[9px] leading-tight ${
+                                  isSelected && entry.status === "completed"
+                                    ? "text-[var(--gaia-contrast-text)]/90"
+                                    : isSelected && entry.status === "incomplete"
+                                      ? "text-white/90"
+                                      : "text-[var(--gaia-text-muted)]"
+                                }`}
+                                title={entry.pathName}
+                              >
+                                {entry.pathName}
+                              </span>
+                              <span
+                                className={`max-w-full truncate text-[8px] leading-tight ${
+                                  isSelected && entry.status === "completed"
+                                    ? "text-[var(--gaia-contrast-text)]/80"
+                                    : isSelected && entry.status === "incomplete"
+                                      ? "text-white/80"
+                                      : "text-[var(--gaia-text-muted)]"
+                                }`}
+                                title={entry.title ?? entry.lessonNumber}
+                              >
+                                {entry.title ?? entry.lessonNumber}
+                              </span>
+                            </>
                           )}
                         </button>
                       </td>

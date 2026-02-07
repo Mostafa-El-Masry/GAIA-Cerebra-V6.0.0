@@ -31,7 +31,7 @@ function PreviewContent() {
 
   if (!path) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 wealth-theme bg-[var(--gaia-surface)]">
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 bg-[var(--gaia-surface)]">
         <p className="text-[var(--gaia-text-muted)]">No project path provided.</p>
         <Link
           href="/apollo/learning"
@@ -46,7 +46,7 @@ function PreviewContent() {
   const indexUrl = `${path}/index.html`
 
   return (
-    <div className="wealth-theme fixed inset-0 flex flex-col bg-[var(--gaia-surface)] z-50">
+    <div className="fixed inset-0 flex flex-col bg-[var(--gaia-surface)] z-50">
       <div className="flex items-center gap-4 px-4 py-2 border-b border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] shrink-0">
         <Link
           href="/apollo/learning"
@@ -96,7 +96,7 @@ function PreviewContent() {
 
 export default function LearningPreviewPage() {
   return (
-    <Suspense fallback={<div className="p-4 wealth-theme bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">Loading…</div>}>
+    <Suspense fallback={<div className="p-4 bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">Loading…</div>}>
       <PreviewContent />
     </Suspense>
   )

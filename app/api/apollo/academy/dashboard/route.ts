@@ -10,6 +10,7 @@ import {
   buildSchedule,
   CALENDAR_START,
   CALENDAR_END,
+  formatLessonNumber,
 } from "@/lib/academy-calendar";
 
 /** GET: dashboard data — last visited lesson + current scheduled lesson. Completion from DB only. */
@@ -67,9 +68,37 @@ export async function GET() {
       };
     }
 
+    let todayEntry: {
+      date: string;
+      pathId: string;
+      lessonId: string;
+      pathName: string;
+      lessonNumber: string;
+      title: string | null;
+      status: "completed" | "incomplete";
+    } | null = null;
+    if (todayIso >= CALENDAR_START && todayIso <= CALENDAR_END) {
+      const entry = schedule.find((e) => e.date === todayIso);
+      if (entry) {
+        const completed = (completedByPath[entry.pathId] ?? []).includes(
+          entry.lessonId,
+        );
+        todayEntry = {
+          date: entry.date,
+          pathId: entry.pathId,
+          lessonId: entry.lessonId,
+          pathName: getPathDisplayName(entry.pathId),
+          lessonNumber: formatLessonNumber(entry.lessonId),
+          title: getLessonTitle(entry.pathId, entry.lessonId),
+          status: completed ? "completed" : "incomplete",
+        };
+      }
+    }
+
     return NextResponse.json({
       lastVisited: lastVisitedPayload,
       currentScheduled,
+      todayEntry,
       calendarStart: CALENDAR_START,
       calendarEnd: CALENDAR_END,
     });

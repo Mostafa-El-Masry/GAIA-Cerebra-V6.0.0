@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="wealth-theme min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">
+    <div className="min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">
       <div className="p-4">{children}</div>
     </div>
   )

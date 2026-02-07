@@ -28,6 +28,15 @@ type DashboardData = {
     date: string;
     status: "completed" | "incomplete";
   } | null;
+  todayEntry: {
+    date: string;
+    pathId: string;
+    lessonId: string;
+    pathName: string;
+    lessonNumber: string;
+    title: string | null;
+    status: "completed" | "incomplete";
+  } | null;
   calendarStart: string;
   calendarEnd: string;
 };
@@ -115,7 +124,7 @@ export default function AcademyDashboardPage() {
   if (loading && paths.length === 0) {
     return (
       <div className="min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">
-        <div className="mx-auto max-w-2xl px-4 py-8">
+        <div className="mx-auto max-w-4xl px-4 py-8">
           <p className="text-sm text-[var(--gaia-text-muted)]">Loading academy…</p>
         </div>
       </div>
@@ -124,13 +133,10 @@ export default function AcademyDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">
-      <div className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-xl font-semibold text-[var(--gaia-text-strong)] mb-2">
+      <div className="mx-auto max-w-4xl px-4 py-8">
+        <h1 className="text-xl font-semibold text-[var(--gaia-text-strong)] mb-6">
           Academy
         </h1>
-        <p className="text-sm text-[var(--gaia-text-muted)] mb-6">
-          File-driven paths. Progress is completed / total lessons.
-        </p>
 
         {error && (
           <div className="mb-4 rounded-lg border border-[var(--gaia-warning-border)] bg-[var(--gaia-warning-bg)] px-3 py-2 text-sm text-[var(--gaia-warning)]">
@@ -138,12 +144,12 @@ export default function AcademyDashboardPage() {
           </div>
         )}
 
-        {/* Dashboard (read-only): last visited + current scheduled */}
+        {/* Dashboard (read-only): last visited + current scheduled + today calendar day */}
         <section className="mb-8 rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-4 shadow-sm">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)] mb-3">
             Dashboard
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto]">
             <div className="rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-3">
             <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
               Last lesson visited
@@ -198,19 +204,58 @@ export default function AcademyDashboardPage() {
                 </p>
               )}
             </div>
+            {/* Today: 1-day calendar cell, fixed width, same line to the right */}
+            <Link
+              href="/apollo/academy/calendar"
+              className="flex w-52 min-w-52 shrink-0 flex-col rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-3 text-center transition hover:opacity-90 min-h-[10.5rem]"
+            >
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
+                Today
+              </p>
+              <p className="mt-1 text-sm font-medium text-[var(--gaia-text-strong)]">
+                {dashboard?.todayEntry
+                  ? new Date(dashboard.todayEntry.date + "T12:00:00").toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  : new Date().toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+              </p>
+              {dashboard?.todayEntry ? (
+                <>
+                  <p className="mt-2 text-xs text-[var(--gaia-text-default)] line-clamp-2">
+                    {dashboard.todayEntry.pathName} · {dashboard.todayEntry.lessonNumber}
+                    {dashboard.todayEntry.title ? ` — ${dashboard.todayEntry.title}` : ""}
+                  </p>
+                  <p
+                    className={`mt-1 text-xs font-semibold ${
+                      dashboard.todayEntry.status === "completed"
+                        ? "text-[var(--gaia-positive)]"
+                        : "text-[var(--gaia-negative)]"
+                    }`}
+                  >
+                    {dashboard.todayEntry.status === "completed"
+                      ? "Completed"
+                      : "Incomplete"}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-2 flex-1 text-sm text-[var(--gaia-text-muted)]">
+                  No study day today
+                </p>
+              )}
+              <p className="mt-auto pt-2 text-xs font-medium text-[var(--gaia-text-muted)]">
+                Learning calendar →
+              </p>
+            </Link>
           </div>
         </section>
-
-        <p className="mb-4 text-sm text-[var(--gaia-text-muted)]">
-        Use the{" "}
-        <Link
-          href="/dashboard/calendars"
-          className="font-medium text-[var(--gaia-text-strong)] underline hover:no-underline"
-        >
-          Learning calendar
-        </Link>{" "}
-        on the dashboard to see study days (Mar 1–Dec 31 2026).
-        </p>
 
         {/* Paths and lessons — click path to expand/collapse */}
         <div className="space-y-4">
