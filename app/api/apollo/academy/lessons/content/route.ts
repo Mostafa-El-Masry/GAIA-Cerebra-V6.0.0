@@ -4,9 +4,9 @@ import type { PathId } from "@/lib/academy";
 import { getLessonMeta } from "@/lib/academy-db";
 
 const VALID_PATH_IDS: PathId[] = [
-  "self-healing",
   "web-fundamentals",
   "financial-literacy",
+  "sanctum",
 ];
 
 /** GET ?pathId= &lessonId= — returns lesson content + meta (video_url, required_minutes, completed). No auto-complete. */
@@ -61,6 +61,11 @@ export async function GET(req: Request) {
       completed: meta?.completed ?? false,
       completedAt: meta?.completedAt ?? null,
       lessonUuid: meta?.lessonUuid ?? null,
+      lessonType: meta?.lessonType ?? "learning",
+      durationMinutes: meta?.durationMinutes ?? 15,
+      allowsReflection: meta?.allowsReflection ?? false,
+      allowsAudio: meta?.allowsAudio ?? false,
+      allowsVideo: meta?.allowsVideo ?? false,
     });
   } catch (e) {
     console.error("Academy lesson content error:", e);

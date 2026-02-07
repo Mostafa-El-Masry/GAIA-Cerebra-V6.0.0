@@ -46,6 +46,17 @@ export async function GET() {
     const now = new Date();
     const todayIso = now.toISOString().slice(0, 10);
     const nextEntry = schedule.find((e) => e.date >= todayIso);
+    const PATH_STAGES: Record<PathId, string> = {
+      "web-fundamentals": "Skills phase",
+      "financial-literacy": "Applied phase",
+      "sanctum": "Practice phase",
+    };
+    const PATH_FUTURE: Record<PathId, string> = {
+      "web-fundamentals": "Builds toward technical fluency and project capability.",
+      "financial-literacy": "Builds toward informed financial decisions.",
+      "sanctum": "Builds toward steady presence and self-awareness.",
+    };
+
     let currentScheduled: {
       pathId: string;
       lessonId: string;
@@ -53,6 +64,11 @@ export async function GET() {
       title: string | null;
       date: string;
       status: "completed" | "incomplete";
+      context?: {
+        reasonNext: string;
+        stage: string;
+        futureRelevance: string;
+      };
     } | null = null;
     if (nextEntry) {
       const completed = (completedByPath[nextEntry.pathId] ?? []).includes(
@@ -65,6 +81,12 @@ export async function GET() {
         title: getLessonTitle(nextEntry.pathId, nextEntry.lessonId),
         date: nextEntry.date,
         status: completed ? "completed" : "incomplete",
+        context: {
+          reasonNext:
+            "Scheduled by calendar rotation (Web Fundamentals → Financial Literacy → Sanctum).",
+          stage: PATH_STAGES[nextEntry.pathId] ?? "Current phase",
+          futureRelevance: PATH_FUTURE[nextEntry.pathId] ?? "Builds toward path completion.",
+        },
       };
     }
 

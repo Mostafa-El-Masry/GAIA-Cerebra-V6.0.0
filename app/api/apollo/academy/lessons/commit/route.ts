@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import type { PathId } from "@/lib/academy";
+import { getPathDisplayName } from "@/lib/academy";
+import { getPathsInfoWithCompletion } from "@/lib/academy";
 import { setLessonCompleted } from "@/lib/academy-db";
 
 const VALID_PATH_IDS: PathId[] = [
-  "self-healing",
   "web-fundamentals",
   "financial-literacy",
+  "sanctum",
 ];
 
 type Body = { pathId?: string; lessonId?: string };
@@ -37,7 +39,21 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    return NextResponse.json({ ok: true });
+
+    const paths = await getPathsInfoWithCompletion();
+    const pathInfo = paths.find((p) => p.id === pathId);
+    const completed = pathInfo?.completedLessons ?? 0;
+    const total = pathInfo?.totalLessons ?? 0;
+    const pathName = pathInfo ? getPathDisplayName(pathId) : "";
+
+    return NextResponse.json({
+      ok: true,
+      pathProgress: {
+        pathName,
+        completed,
+        total,
+      },
+    });
   } catch (e) {
     console.error("Academy commit completion error:", e);
     return NextResponse.json(

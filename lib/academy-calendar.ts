@@ -1,6 +1,6 @@
 /**
  * Academy learning calendar: study days Mar 1–Dec 31 2026 only.
- * Phased weekly rules; lesson rotation by path (Self-Healing → Web Fundamentals → Financial Literacy).
+ * Phased weekly rules; lesson rotation by path (Web Fundamentals → Financial Literacy → Sanctum).
  */
 
 import type { PathId } from "./academy";
@@ -62,7 +62,7 @@ export function getStudyDaysInRange(start: string, end: string): string[] {
 
 /**
  * Build rotated lesson assignment for each study day.
- * Rotation: Self-Healing → Web Fundamentals → Financial Literacy → repeat.
+ * Rotation: Web Fundamentals → Financial Literacy → Sanctum → repeat.
  * One lesson per study day; skip path if no lessons left; don't repeat same path twice in a row if others have lessons.
  */
 export function buildSchedule(

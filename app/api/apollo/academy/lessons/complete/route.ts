@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import type { PathId } from "@/lib/academy";
 
 const VALID_PATH_IDS: PathId[] = [
-  "self-healing",
   "web-fundamentals",
   "financial-literacy",
+  "sanctum",
 ];
 
 type Body = { pathId?: string; lessonId?: string; completed?: boolean };

@@ -5,12 +5,19 @@
 
 import { supabase } from "@/lib/supabase-server";
 
+export type LessonType = "learning" | "sanctum";
+
 export type LessonMeta = {
   lessonUuid: string;
   videoUrl: string | null;
   requiredMinutes: number;
   completed: boolean;
   completedAt: string | null;
+  lessonType: LessonType;
+  durationMinutes: number;
+  allowsReflection: boolean;
+  allowsAudio: boolean;
+  allowsVideo: boolean;
 };
 
 export type QuizQuestion = {
@@ -37,19 +44,25 @@ export async function getLessonMeta(
 
     const { data: lesson, error } = await supabase
       .from("academy_lessons")
-      .select("id, video_url, required_minutes, completed, completed_at")
+      .select("id, video_url, required_minutes, completed, completed_at, lesson_type, duration_minutes, allows_reflection, allows_audio, allows_video")
       .eq("path_id", pathRow.id)
       .eq("slug", lessonSlug)
       .limit(1)
       .maybeSingle();
     if (error || !lesson) return null;
 
+    const row = lesson as Record<string, unknown>;
     return {
       lessonUuid: lesson.id,
       videoUrl: lesson.video_url ?? null,
       requiredMinutes: lesson.required_minutes ?? 15,
       completed: Boolean(lesson.completed),
       completedAt: lesson.completed_at ?? null,
+      lessonType: (row.lesson_type === "sanctum" ? "sanctum" : "learning") as LessonType,
+      durationMinutes: Number(row.duration_minutes ?? row.required_minutes ?? 15),
+      allowsReflection: Boolean(row.allows_reflection),
+      allowsAudio: Boolean(row.allows_audio),
+      allowsVideo: Boolean(row.allows_video),
     };
   } catch {
     return null;
@@ -125,7 +138,83 @@ export async function setLessonCompleted(
   }
 }
 
-/** Get 10 quiz questions for a lesson (by lesson UUID). */
+/** Start a lesson session (no partial state; timer runs in-memory until complete). */
+export async function createLessonSession(
+  lessonUuid: string,
+  userId: string | null,
+): Promise<{ id: string } | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from("lesson_sessions")
+      .insert({
+        lesson_id: lessonUuid,
+        user_id: userId ?? null,
+        started_at: new Date().toISOString(),
+        duration_completed: 0,
+        completed: false,
+      })
+      .select("id")
+      .single();
+    if (error || !data) return null;
+    return { id: data.id };
+  } catch {
+    return null;
+  }
+}
+
+/** Mark session complete (irreversible). Call when timer reaches duration_minutes. */
+export async function completeLessonSession(
+  sessionId: string,
+  durationCompletedSeconds: number,
+): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from("lesson_sessions")
+      .update({
+        completed_at: new Date().toISOString(),
+        duration_completed: durationCompletedSeconds,
+        completed: true,
+      })
+      .eq("id", sessionId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+export type ReflectionType = "text" | "voice" | "video";
+
+/** Save a lesson reflection (optional; does not affect completion). */
+export async function saveReflection(
+  lessonUuid: string,
+  userId: string | null,
+  type: ReflectionType,
+  content: string | null,
+  localPath: string | null,
+): Promise<{ id: string } | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from("lesson_reflections")
+      .insert({
+        lesson_id: lessonUuid,
+        user_id: userId ?? null,
+        type,
+        content: content ?? null,
+        local_path: localPath ?? null,
+      })
+      .select("id")
+      .single();
+    if (error || !data) return null;
+    return { id: data.id };
+  } catch {
+    return null;
+  }
+}
+
+/** Get all quiz questions for a lesson (by lesson UUID). Up to 30; frontend picks 10 per session. */
 export async function getQuizzesForLesson(
   lessonUuid: string,
 ): Promise<QuizQuestion[]> {
@@ -135,7 +224,8 @@ export async function getQuizzesForLesson(
       .from("academy_quizzes")
       .select("id, question, options, correct_answer")
       .eq("lesson_id", lessonUuid)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      .limit(30);
     if (error) return [];
     const list = (rows ?? []) as Array<{
       id: string;
@@ -143,7 +233,6 @@ export async function getQuizzesForLesson(
       options: string[];
       correct_answer: string;
     }>;
-    if (list.length !== 10) return []; // require exactly 10
     return list.map((r) => ({
       id: r.id,
       question: r.question,

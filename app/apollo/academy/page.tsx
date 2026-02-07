@@ -27,6 +27,11 @@ type DashboardData = {
     title: string | null;
     date: string;
     status: "completed" | "incomplete";
+    context?: {
+      reasonNext: string;
+      stage: string;
+      futureRelevance: string;
+    };
   } | null;
   todayEntry: {
     date: string;
@@ -48,6 +53,7 @@ export default function AcademyDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [expandedPathIds, setExpandedPathIds] = useState<Set<string>>(new Set());
+  const [showCompletionAck, setShowCompletionAck] = useState(false);
 
   const togglePath = (pathId: string) => {
     setExpandedPathIds((prev) => {
@@ -96,6 +102,24 @@ export default function AcademyDashboardPage() {
   useEffect(() => {
     fetchDashboard();
   }, [fetchDashboard]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !dashboard) return;
+    try {
+      if (window.sessionStorage.getItem("academy_recent_completion") === "1") {
+        window.sessionStorage.removeItem("academy_recent_completion");
+        setShowCompletionAck(true);
+      }
+    } catch {
+      // ignore
+    }
+  }, [dashboard]);
+
+  useEffect(() => {
+    if (!showCompletionAck) return;
+    const t = setTimeout(() => setShowCompletionAck(false), 3000);
+    return () => clearTimeout(t);
+  }, [showCompletionAck]);
 
   const handleDelete = useCallback(
     async (pathId: string, lessonId: string) => {
@@ -150,14 +174,26 @@ export default function AcademyDashboardPage() {
         )}
 
         {/* Dashboard (read-only): last visited + current scheduled + today calendar day */}
-        <section className="mb-8 rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-4 shadow-sm">
+        <section
+          className={`mb-8 rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-4 shadow-sm transition-all duration-500 ${
+            showCompletionAck ? "ring-1 ring-[var(--gaia-positive)]/30" : ""
+          }`}
+        >
           <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)] mb-3">
             Dashboard
           </h2>
+          {showCompletionAck && (
+            <p
+              className="mb-3 text-sm font-medium text-[var(--gaia-positive)] opacity-100 transition-opacity duration-300"
+              role="status"
+            >
+              Lesson verified.
+            </p>
+          )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto]">
             <div className="rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-3">
             <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
-              Last lesson visited
+              Last session
             </p>
             {dashboard?.lastVisited ? (
               <>
@@ -179,7 +215,7 @@ export default function AcademyDashboardPage() {
             </div>
             <div className="rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-3">
               <p className="text-[11px] font-semibold uppercase text-[var(--gaia-text-muted)]">
-                Current scheduled lesson
+                Next session
               </p>
               {dashboard?.currentScheduled ? (
                 <>
@@ -202,6 +238,13 @@ export default function AcademyDashboardPage() {
                       ? "Completed"
                       : "Incomplete"}
                   </p>
+                  {dashboard.currentScheduled.context && (
+                    <div className="mt-3 border-t border-[var(--gaia-border)] pt-2 text-[11px] text-[var(--gaia-text-muted)] space-y-1">
+                      <p>{dashboard.currentScheduled.context.reasonNext}</p>
+                      <p>{dashboard.currentScheduled.context.stage}</p>
+                      <p>{dashboard.currentScheduled.context.futureRelevance}</p>
+                    </div>
+                  )}
                 </>
               ) : (
                 <p className="mt-1 text-sm text-[var(--gaia-text-muted)]">

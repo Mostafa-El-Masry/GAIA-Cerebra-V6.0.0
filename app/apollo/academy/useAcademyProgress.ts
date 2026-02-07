@@ -5,9 +5,9 @@ import { useMemo, useState, useCallback } from "react";
 /** Minimal hook for compatibility with wealth/dashboard. Not wired to file-driven Academy. */
 export function useAcademyProgress() {
   const [byTrack, setByTrack] = useState<Record<string, { completedLessonIds: string[] }>>({
-    "self-healing": { completedLessonIds: [] },
     "web-fundamentals": { completedLessonIds: [] },
     "financial-literacy": { completedLessonIds: [] },
+    "sanctum": { completedLessonIds: [] },
   });
 
   const state = useMemo(

@@ -10,7 +10,6 @@ create table academy_paths (
 
 -- Seed data:
 insert into academy_paths (key, title) values
-('self-healing', 'Self-Healing'),
 ('web-fundamentals', 'Web Fundamentals'),
 ('financial-literacy', 'Financial Literacy');
 

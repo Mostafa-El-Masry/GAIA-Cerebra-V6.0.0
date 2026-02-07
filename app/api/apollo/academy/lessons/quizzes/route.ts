@@ -3,9 +3,9 @@ import type { PathId } from "@/lib/academy";
 import { getLessonMeta, getQuizzesForLesson } from "@/lib/academy-db";
 
 const VALID_PATH_IDS: PathId[] = [
-  "self-healing",
   "web-fundamentals",
   "financial-literacy",
+  "sanctum",
 ];
 
 /** GET ?pathId= &lessonId= — returns 10 quiz questions for the lesson. */
@@ -36,15 +36,15 @@ export async function GET(req: Request) {
       );
     }
 
-    const questions = await getQuizzesForLesson(meta.lessonUuid);
-    if (questions.length !== 10) {
+    const pool = await getQuizzesForLesson(meta.lessonUuid);
+    if (pool.length < 10) {
       return NextResponse.json(
-        { error: "Quiz not configured (exactly 10 questions required)." },
+        { error: "Quiz not configured (at least 10 questions required)." },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ questions });
+    return NextResponse.json({ questions: pool, poolSize: pool.length });
   } catch (e) {
     console.error("Academy quizzes error:", e);
     return NextResponse.json(
