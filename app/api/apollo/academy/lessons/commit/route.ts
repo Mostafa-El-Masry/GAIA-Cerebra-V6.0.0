@@ -8,6 +8,7 @@ const VALID_PATH_IDS: PathId[] = [
   "web-fundamentals",
   "financial-literacy",
   "sanctum",
+  "self-healing",
 ];
 
 type Body = { pathId?: string; lessonId?: string };
