@@ -188,11 +188,11 @@ export default function LearningCalendar({
           <button
             type="button"
             onClick={goToToday}
-            className="text-sm font-medium text-[var(--gaia-text-default)] transition hover:text-[var(--gaia-text-strong)]"
+            className="text-base font-medium text-[var(--gaia-text-default)] transition hover:text-[var(--gaia-text-strong)]"
           >
             Today
           </button>
-          <span className="text-sm font-semibold text-[var(--gaia-text-strong)] border-b-2 border-[var(--gaia-positive)] pb-0.5">
+          <span className="text-base font-semibold text-[var(--gaia-text-strong)] border-b-2 border-[var(--gaia-positive)] pb-0.5">
             Calendar
           </span>
         </div>
@@ -201,7 +201,7 @@ export default function LearningCalendar({
       <div className="flex flex-col gap-4 lg:flex-row">
         {/* Left: Year + month list */}
         <aside className="flex shrink-0 flex-row gap-6 border-b border-[var(--gaia-border)] pb-4 lg:w-24 lg:flex-col lg:border-b-0 lg:border-r lg:pb-0 lg:pr-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
             2026
           </p>
           <nav className="flex gap-2 lg:flex-col">
@@ -212,7 +212,7 @@ export default function LearningCalendar({
                   key={label}
                   type="button"
                   onClick={() => goToMonth(index)}
-                  className={`text-left text-sm font-medium transition ${
+                  className={`text-left text-base font-medium transition ${
                     isActive
                       ? "text-[var(--gaia-positive)]"
                       : "text-[var(--gaia-text-default)] hover:text-[var(--gaia-text-strong)]"
@@ -228,7 +228,7 @@ export default function LearningCalendar({
         {/* Center: Calendar grid */}
         <div className="min-w-0 flex-1 overflow-x-auto">
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-base font-semibold text-[var(--gaia-text-strong)]">
+            <h3 className="text-lg font-semibold text-[var(--gaia-text-strong)]">
               {viewingMonthLabel}
             </h3>
             <div className="flex items-center gap-1">
@@ -252,7 +252,7 @@ export default function LearningCalendar({
               </button>
             </div>
           </div>
-          <table className="w-full min-w-[420px] table-fixed border-collapse text-sm">
+          <table className="w-full min-w-[420px] table-fixed border-collapse text-base">
             <colgroup>
               {WEEKDAY_LABELS.map((_, i) => (
                 <col key={i} style={{ width: "14.2857%" }} />
@@ -263,7 +263,7 @@ export default function LearningCalendar({
                 {WEEKDAY_LABELS.map((label) => (
                   <th
                     key={label}
-                    className="h-10 border-b border-[var(--gaia-border)] py-2 text-center text-[10px] font-medium uppercase tracking-wider text-[var(--gaia-text-muted)]"
+                    className="h-10 border-b border-[var(--gaia-border)] py-2 text-center text-xs font-medium uppercase tracking-wider text-[var(--gaia-text-muted)]"
                   >
                     {label}
                   </th>
@@ -324,11 +324,11 @@ export default function LearningCalendar({
                                   : "text-[var(--gaia-text-muted)] hover:bg-[var(--gaia-surface-soft)]/70"
                           }`}
                         >
-                          <span className="text-xs font-medium leading-tight">{dayNum}</span>
+                          <span className="text-sm font-medium leading-tight">{dayNum}</span>
                           {entry && (
                             <>
                               <span
-                                className={`mt-0.5 max-w-full truncate text-[9px] leading-tight ${
+                                className={`mt-0.5 max-w-full truncate text-[11px] leading-tight ${
                                   isSelected && entry.status === "completed"
                                     ? "text-[var(--gaia-contrast-text)]/90"
                                     : isSelected && entry.status === "incomplete"
@@ -340,7 +340,7 @@ export default function LearningCalendar({
                                 {entry.pathName}
                               </span>
                               <span
-                                className={`max-w-full truncate text-[8px] leading-tight ${
+                                className={`max-w-full truncate text-[10px] leading-tight ${
                                   isSelected && entry.status === "completed"
                                     ? "text-[var(--gaia-contrast-text)]/80"
                                     : isSelected && entry.status === "incomplete"
@@ -368,10 +368,10 @@ export default function LearningCalendar({
           {selectedDate && inRange(selectedDate) ? (
             <>
               <div className="mb-3">
-                <p className="text-lg font-bold uppercase tracking-wide text-[var(--gaia-positive)]">
+                <p className="text-xl font-bold uppercase tracking-wide text-[var(--gaia-positive)]">
                   {formatDayHeader(selectedDate).month} {formatDayHeader(selectedDate).day}
                 </p>
-                <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--gaia-text-muted)]">
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--gaia-text-muted)]">
                   {formatDayHeader(selectedDate).weekday}
                 </p>
               </div>
@@ -381,10 +381,10 @@ export default function LearningCalendar({
                     href={`/apollo/academy/lesson/${selectedEntry.pathId}/${selectedEntry.lessonId}`}
                     className="block rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-3 transition hover:border-[var(--gaia-positive)]/50"
                   >
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
                       {selectedEntry.pathName}
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-[var(--gaia-text-strong)]">
+                    <p className="mt-1 text-base font-semibold text-[var(--gaia-text-strong)]">
                       {selectedEntry.lessonNumber}
                       {selectedEntry.title && (
                         <span className="font-normal text-[var(--gaia-text-default)]">
@@ -393,7 +393,7 @@ export default function LearningCalendar({
                       )}
                     </p>
                     <span
-                      className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                      className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${
                         selectedEntry.status === "completed"
                           ? "border-[var(--gaia-positive-border)] bg-[var(--gaia-positive-bg)] text-[var(--gaia-positive)]"
                           : "border-[var(--gaia-border)] text-[var(--gaia-text-muted)]"
@@ -403,14 +403,14 @@ export default function LearningCalendar({
                     </span>
                   </Link>
                 ) : (
-                  <p className="text-[11px] text-[var(--gaia-text-muted)]">
+                  <p className="text-sm text-[var(--gaia-text-muted)]">
                     No lesson scheduled
                   </p>
                 )}
               </div>
             </>
           ) : (
-            <p className="text-[11px] text-[var(--gaia-text-muted)]">
+            <p className="text-sm text-[var(--gaia-text-muted)]">
               Select a day
             </p>
           )}

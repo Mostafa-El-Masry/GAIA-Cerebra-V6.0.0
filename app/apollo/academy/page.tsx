@@ -121,6 +121,11 @@ export default function AcademyDashboardPage() {
     [refreshAll],
   );
 
+  const todayDisplayDate =
+    dashboard?.todayEntry
+      ? new Date(dashboard.todayEntry.date + "T12:00:00")
+      : new Date();
+
   if (loading && paths.length === 0) {
     return (
       <div className="min-h-screen bg-[var(--gaia-surface)] text-[var(--gaia-text-default)]">
@@ -204,53 +209,50 @@ export default function AcademyDashboardPage() {
                 </p>
               )}
             </div>
-            {/* Today: 1-day calendar cell, fixed width, same line to the right */}
+            {/* Today: tear-off calendar day style — month banner, large day, weekday */}
             <Link
               href="/apollo/academy/calendar"
-              className="flex w-52 min-w-52 shrink-0 flex-col rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] p-3 text-center transition hover:opacity-90 min-h-[10.5rem]"
+              className="flex w-52 min-w-52 shrink-0 flex-col overflow-hidden rounded-lg border border-[var(--gaia-border)] bg-[var(--gaia-surface)] text-center shadow-sm transition hover:opacity-90 min-h-[10.5rem]"
             >
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
-                Today
-              </p>
-              <p className="mt-1 text-sm font-medium text-[var(--gaia-text-strong)]">
-                {dashboard?.todayEntry
-                  ? new Date(dashboard.todayEntry.date + "T12:00:00").toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  : new Date().toLocaleDateString("en-US", {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-              </p>
-              {dashboard?.todayEntry ? (
-                <>
-                  <p className="mt-2 text-xs text-[var(--gaia-text-default)] line-clamp-2">
-                    {dashboard.todayEntry.pathName} · {dashboard.todayEntry.lessonNumber}
-                    {dashboard.todayEntry.title ? ` — ${dashboard.todayEntry.title}` : ""}
-                  </p>
-                  <p
-                    className={`mt-1 text-xs font-semibold ${
-                      dashboard.todayEntry.status === "completed"
-                        ? "text-[var(--gaia-positive)]"
-                        : "text-[var(--gaia-negative)]"
-                    }`}
-                  >
-                    {dashboard.todayEntry.status === "completed"
-                      ? "Completed"
-                      : "Incomplete"}
-                  </p>
-                </>
-              ) : (
-                <p className="mt-2 flex-1 text-sm text-[var(--gaia-text-muted)]">
-                  No study day today
+              {/* Month strip (calendar-day style) */}
+              <div className="bg-[var(--gaia-positive)] px-2 py-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--gaia-contrast-text)]">
+                  {todayDisplayDate.toLocaleDateString("en-US", { month: "long" })}
                 </p>
-              )}
-              <p className="mt-auto pt-2 text-xs font-medium text-[var(--gaia-text-muted)]">
+              </div>
+              {/* Day number + weekday */}
+              <div className="flex flex-1 flex-col justify-center px-2 py-3">
+                <p className="text-4xl font-bold tabular-nums leading-none text-[var(--gaia-text-strong)]">
+                  {todayDisplayDate.getDate()}
+                </p>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
+                  {todayDisplayDate.toLocaleDateString("en-US", { weekday: "long" })}
+                </p>
+                {dashboard?.todayEntry ? (
+                  <>
+                    <p className="mt-2 text-[10px] text-[var(--gaia-text-default)] line-clamp-2 leading-tight">
+                      {dashboard.todayEntry.pathName} · {dashboard.todayEntry.lessonNumber}
+                      {dashboard.todayEntry.title ? ` — ${dashboard.todayEntry.title}` : ""}
+                    </p>
+                    <p
+                      className={`mt-0.5 text-[10px] font-semibold ${
+                        dashboard.todayEntry.status === "completed"
+                          ? "text-[var(--gaia-positive)]"
+                          : "text-[var(--gaia-negative)]"
+                      }`}
+                    >
+                      {dashboard.todayEntry.status === "completed"
+                        ? "Completed"
+                        : "Incomplete"}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-2 text-[10px] text-[var(--gaia-text-muted)]">
+                    No study day today
+                  </p>
+                )}
+              </div>
+              <p className="border-t border-[var(--gaia-border)] px-2 py-1.5 text-[10px] font-medium text-[var(--gaia-text-muted)]">
                 Learning calendar →
               </p>
             </Link>
