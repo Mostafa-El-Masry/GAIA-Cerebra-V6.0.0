@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function DisengagementMode({ onExit }: { onExit: () => void }) {
+  const [started, setStarted] = useState(false);
   const [waited, setWaited] = useState(false);
   const [didNotEscalate, setDidNotEscalate] = useState(false);
   const [noLateNight, setNoLateNight] = useState(false);
@@ -10,8 +12,24 @@ export default function DisengagementMode({ onExit }: { onExit: () => void }) {
 
   const allChecked = waited && didNotEscalate && noLateNight && willNotReopen;
 
+  if (!started) {
+    return (
+      <div>
+        <h2>Emotional Disengagement</h2>
+        <p>
+          Break emotional attachment loops during or after interaction with a triggering person. Creates distance; no analysis or journaling.
+        </p>
+        <Link href="/sanctum/protocol">View full protocol</Link>
+        <button type="button" onClick={() => setStarted(true)}>
+          Start
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
+      <h2>Emotional Disengagement</h2>
       <label>
         <input
           type="checkbox"

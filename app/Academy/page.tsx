@@ -11,7 +11,10 @@ export default function AcademyPage() {
     <div>
       <Link href="/academy/tracks/hard-skills">Hard Skills</Link>
       {showSanctumSlot && (
-        <Link href={SANCTUM_CALENDAR_NODE.route}>{SANCTUM_CALENDAR_NODE.label}</Link>
+        <Link href={SANCTUM_CALENDAR_NODE.route}>
+          {SANCTUM_CALENDAR_NODE.label}
+          {SANCTUM_CALENDAR_NODE.description != null && ` — ${SANCTUM_CALENDAR_NODE.description}`}
+        </Link>
       )}
     </div>
   );
