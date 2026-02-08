@@ -11,7 +11,9 @@ import {
   CALENDAR_START,
   CALENDAR_END,
   formatLessonNumber,
+  getCalendarPathDisplayName,
 } from "@/lib/academy-calendar";
+import type { CalendarPathId } from "@/lib/academy-calendar";
 
 /** GET: dashboard data — last visited lesson + current scheduled lesson. Completion from DB only. */
 export async function GET() {
@@ -46,18 +48,20 @@ export async function GET() {
     const now = new Date();
     const todayIso = now.toISOString().slice(0, 10);
     const nextEntry = schedule.find((e) => e.date >= todayIso);
-    const PATH_STAGES: Record<PathId, string> = {
+    const PATH_STAGES: Record<CalendarPathId, string> = {
       "web-fundamentals": "Skills phase",
       "financial-literacy": "Applied phase",
+      sanctum: "Reactive system",
     };
-    const PATH_FUTURE: Record<PathId, string> = {
+    const PATH_FUTURE: Record<CalendarPathId, string> = {
       "web-fundamentals": "Builds toward technical fluency and project capability.",
       "financial-literacy": "Builds toward informed financial decisions.",
+      sanctum: "Body-based stabilization — no lessons.",
     };
 
     let currentScheduled: {
       pathId: string;
-      lessonId: string;
+      lessonId: string | null;
       pathName: string;
       title: string | null;
       date: string;
@@ -69,19 +73,25 @@ export async function GET() {
       };
     } | null = null;
     if (nextEntry) {
-      const completed = (completedByPath[nextEntry.pathId] ?? []).includes(
-        nextEntry.lessonId,
-      );
+      const completed =
+        nextEntry.pathId !== "sanctum" &&
+        nextEntry.lessonId != null &&
+        (completedByPath[nextEntry.pathId] ?? []).includes(nextEntry.lessonId);
       currentScheduled = {
         pathId: nextEntry.pathId,
         lessonId: nextEntry.lessonId,
-        pathName: getPathDisplayName(nextEntry.pathId),
-        title: getLessonTitle(nextEntry.pathId, nextEntry.lessonId),
+        pathName: getCalendarPathDisplayName(nextEntry.pathId),
+        title:
+          nextEntry.pathId === "sanctum"
+            ? "Sanctum"
+            : nextEntry.lessonId != null
+              ? getLessonTitle(nextEntry.pathId, nextEntry.lessonId)
+              : null,
         date: nextEntry.date,
         status: completed ? "completed" : "incomplete",
         context: {
           reasonNext:
-            "Scheduled by calendar rotation (Web Fundamentals → Financial Literacy).",
+            "Scheduled by calendar rotation (Web Fundamentals → Financial Literacy → Sanctum).",
           stage: PATH_STAGES[nextEntry.pathId] ?? "Current phase",
           futureRelevance: PATH_FUTURE[nextEntry.pathId] ?? "Builds toward path completion.",
         },
@@ -91,7 +101,7 @@ export async function GET() {
     let todayEntry: {
       date: string;
       pathId: string;
-      lessonId: string;
+      lessonId: string | null;
       pathName: string;
       lessonNumber: string;
       title: string | null;
@@ -100,16 +110,22 @@ export async function GET() {
     if (todayIso >= CALENDAR_START && todayIso <= CALENDAR_END) {
       const entry = schedule.find((e) => e.date === todayIso);
       if (entry) {
-        const completed = (completedByPath[entry.pathId] ?? []).includes(
-          entry.lessonId,
-        );
+        const completed =
+          entry.pathId !== "sanctum" &&
+          entry.lessonId != null &&
+          (completedByPath[entry.pathId] ?? []).includes(entry.lessonId);
         todayEntry = {
           date: entry.date,
           pathId: entry.pathId,
           lessonId: entry.lessonId,
-          pathName: getPathDisplayName(entry.pathId),
-          lessonNumber: formatLessonNumber(entry.lessonId),
-          title: getLessonTitle(entry.pathId, entry.lessonId),
+          pathName: getCalendarPathDisplayName(entry.pathId),
+          lessonNumber: entry.lessonId != null ? formatLessonNumber(entry.lessonId) : "—",
+          title:
+            entry.pathId === "sanctum"
+              ? "Sanctum"
+              : entry.lessonId != null
+                ? getLessonTitle(entry.pathId, entry.lessonId)
+                : null,
           status: completed ? "completed" : "incomplete",
         };
       }

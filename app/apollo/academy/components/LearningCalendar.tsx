@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const STORAGE_KEY = "gaia-learning-calendar-view";
@@ -8,7 +9,7 @@ const STORAGE_KEY = "gaia-learning-calendar-view";
 export type CalendarEntry = {
   date: string;
   pathId: string;
-  lessonId: string;
+  lessonId: string | null;
   pathName: string;
   lessonNumber: string;
   title: string | null;
@@ -71,10 +72,13 @@ function firstDayOfMonth(monthIndex: number): string {
   return `2026-${m}-01`;
 }
 
+const TOOL_ROUTE: Record<string, string> = { sanctum: "/sanctum" };
+
 export default function LearningCalendar({
   entries,
   currentScheduledDate,
 }: Props) {
+  const router = useRouter();
   const entryByDate = useMemo(
     () => Object.fromEntries(entries.map((e) => [e.date, e])),
     [entries],
@@ -282,6 +286,10 @@ export default function LearningCalendar({
                     const dayNum = d.getDate();
 
                     const handleDayClick = () => {
+                      if (entry?.pathId && TOOL_ROUTE[entry.pathId]) {
+                        router.push(TOOL_ROUTE[entry.pathId]);
+                        return;
+                      }
                       setSelectedDate(dateIso);
                       if (!inViewingMonth) {
                         const m = d.getMonth();
@@ -293,7 +301,7 @@ export default function LearningCalendar({
                       return (
                         <td
                           key={dateIso}
-                          className="h-[10.5rem] min-h-[10.5rem] border-r border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)]/40 align-middle text-center last:border-r-0"
+                          className="h-[5.5rem] min-h-[5.5rem] border-r border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)]/40 align-middle text-center last:border-r-0"
                         />
                       );
                     }
@@ -301,7 +309,7 @@ export default function LearningCalendar({
                     return (
                       <td
                         key={dateIso}
-                        className={`h-[10.5rem] min-h-[10.5rem] border-r border-[var(--gaia-border)] align-middle text-center last:border-r-0 ${
+                        className={`h-[5.5rem] min-h-[5.5rem] border-r border-[var(--gaia-border)] align-middle text-center last:border-r-0 ${
                           !inViewingMonth ? "bg-[var(--gaia-surface-soft)]/30" : ""
                         }`}
                       >
@@ -324,11 +332,11 @@ export default function LearningCalendar({
                                   : "text-[var(--gaia-text-muted)] hover:bg-[var(--gaia-surface-soft)]/70"
                           }`}
                         >
-                          <span className="text-sm font-medium leading-tight">{dayNum}</span>
+                          <span className="text-base font-medium leading-tight">{dayNum}</span>
                           {entry && (
                             <>
                               <span
-                                className={`mt-0.5 max-w-full truncate text-[11px] leading-tight ${
+                                className={`mt-0.5 max-w-full truncate text-sm font-semibold leading-tight ${
                                   isSelected && entry.status === "completed"
                                     ? "text-[var(--gaia-contrast-text)]/90"
                                     : isSelected && entry.status === "incomplete"
@@ -340,7 +348,7 @@ export default function LearningCalendar({
                                 {entry.pathName}
                               </span>
                               <span
-                                className={`max-w-full truncate text-[10px] leading-tight ${
+                                className={`max-w-full truncate text-xs leading-tight ${
                                   isSelected && entry.status === "completed"
                                     ? "text-[var(--gaia-contrast-text)]/80"
                                     : isSelected && entry.status === "incomplete"
@@ -377,31 +385,49 @@ export default function LearningCalendar({
               </div>
               <div className="space-y-2">
                 {selectedEntry ? (
-                  <Link
-                    href={`/apollo/academy/lesson/${selectedEntry.pathId}/${selectedEntry.lessonId}`}
-                    className="block rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-3 transition hover:border-[var(--gaia-positive)]/50"
-                  >
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
+                  selectedEntry.pathId && TOOL_ROUTE[selectedEntry.pathId] ? (
+                    <Link
+                      href={TOOL_ROUTE[selectedEntry.pathId]}
+                      className="block rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-3 transition hover:border-[var(--gaia-positive)]/50"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
+                        {selectedEntry.pathName}
+                      </p>
+                      <p className="mt-1 text-base font-semibold text-[var(--gaia-text-strong)]">
+                        {selectedEntry.pathName}
+                      </p>
+                    </Link>
+                  ) : selectedEntry.lessonId != null ? (
+                    <Link
+                      href={`/apollo/academy/lesson/${selectedEntry.pathId}/${selectedEntry.lessonId}`}
+                      className="block rounded-xl border border-[var(--gaia-border)] bg-[var(--gaia-surface-soft)] p-3 transition hover:border-[var(--gaia-positive)]/50"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--gaia-text-muted)]">
+                        {selectedEntry.pathName}
+                      </p>
+                      <p className="mt-1 text-base font-semibold text-[var(--gaia-text-strong)]">
+                        {selectedEntry.lessonNumber}
+                        {selectedEntry.title && (
+                          <span className="font-normal text-[var(--gaia-text-default)]">
+                            {" — "}{selectedEntry.title}
+                          </span>
+                        )}
+                      </p>
+                      <span
+                        className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${
+                          selectedEntry.status === "completed"
+                            ? "border-[var(--gaia-positive-border)] bg-[var(--gaia-positive-bg)] text-[var(--gaia-positive)]"
+                            : "border-[var(--gaia-border)] text-[var(--gaia-text-muted)]"
+                        }`}
+                      >
+                        {selectedEntry.status === "completed" ? "Completed" : "Incomplete"}
+                      </span>
+                    </Link>
+                  ) : (
+                    <p className="text-sm text-[var(--gaia-text-muted)]">
                       {selectedEntry.pathName}
                     </p>
-                    <p className="mt-1 text-base font-semibold text-[var(--gaia-text-strong)]">
-                      {selectedEntry.lessonNumber}
-                      {selectedEntry.title && (
-                        <span className="font-normal text-[var(--gaia-text-default)]">
-                          {" — "}{selectedEntry.title}
-                        </span>
-                      )}
-                    </p>
-                    <span
-                      className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold uppercase ${
-                        selectedEntry.status === "completed"
-                          ? "border-[var(--gaia-positive-border)] bg-[var(--gaia-positive-bg)] text-[var(--gaia-positive)]"
-                          : "border-[var(--gaia-border)] text-[var(--gaia-text-muted)]"
-                      }`}
-                    >
-                      {selectedEntry.status === "completed" ? "Completed" : "Incomplete"}
-                    </span>
-                  </Link>
+                  )
                 ) : (
                   <p className="text-sm text-[var(--gaia-text-muted)]">
                     No lesson scheduled

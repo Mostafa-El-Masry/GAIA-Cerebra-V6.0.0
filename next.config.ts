@@ -65,6 +65,8 @@ const nextConfig: NextConfig = {
     const galleryBase = galleryCdn.replace(/\/$/, "");
     const previewBase = previewCdn.replace(/\/$/, "");
     return [
+      { source: "/sanctum", destination: "/Sanctum" },
+      { source: "/sanctum/:path*", destination: "/Sanctum/:path*" },
       { source: "/img/:path*", destination: `${galleryBase}/:path*` },
       { source: "/media/images/:path*", destination: `${galleryBase}/:path*` },
       { source: "/media/previews/:path*", destination: `${previewBase}/:path*` },

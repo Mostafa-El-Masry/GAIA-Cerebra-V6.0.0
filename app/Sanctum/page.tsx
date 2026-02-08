@@ -11,7 +11,7 @@ export default function SanctumPage() {
   );
 
   return (
-    <SanctumGate>
+    <SanctumGate onRedirectToRegulation={() => setActive("regulation")}>
       {active === "regulation" ? (
         <RegulationSession onExit={() => setActive(null)} />
       ) : active === "disengagement" ? (

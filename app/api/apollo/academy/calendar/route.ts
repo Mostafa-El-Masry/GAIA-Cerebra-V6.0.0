@@ -10,6 +10,7 @@ import {
   CALENDAR_START,
   CALENDAR_END,
   formatLessonNumber,
+  getCalendarPathDisplayName,
 } from "@/lib/academy-calendar";
 
 /** GET ?start=2026-03-01&end=2026-12-31 — calendar entries. Completion from DB only. */
@@ -38,14 +39,20 @@ export async function GET(req: Request) {
     const entries = schedule
       .filter((e) => e.date >= start && e.date <= end)
       .map((e) => {
-        const completed = (completedByPath[e.pathId] ?? []).includes(e.lessonId);
+        const completed =
+          e.pathId !== "sanctum" &&
+          e.lessonId != null &&
+          (completedByPath[e.pathId] ?? []).includes(e.lessonId);
         return {
           date: e.date,
           pathId: e.pathId,
           lessonId: e.lessonId,
-          pathName: getPathDisplayName(e.pathId),
-          lessonNumber: formatLessonNumber(e.lessonId),
-          title: getLessonTitle(e.pathId, e.lessonId),
+          pathName: getCalendarPathDisplayName(e.pathId),
+          lessonNumber: e.lessonId != null ? formatLessonNumber(e.lessonId) : "—",
+          title:
+            e.pathId !== "sanctum" && e.lessonId != null
+              ? getLessonTitle(e.pathId, e.lessonId)
+              : null,
           status: completed ? "completed" : "incomplete",
         };
       });

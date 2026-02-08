@@ -13,14 +13,13 @@ export type CalendarNode = {
   description?: string;
 };
 
-/** Sanctum calendar entry: no lessons, no exercises, pointer to /sanctum only. Reactive system — no lessons. */
-export const SANCTUM_CALENDAR_NODE: CalendarNode = {
+/** Sanctum calendar entry: no lessons, no exercises, pointer to /sanctum only. */
+export const SANCTUM_CALENDAR_NODE = {
   id: "sanctum",
   label: "Sanctum",
   type: "tool",
   route: "/sanctum",
-  description: "Reactive system — no lessons",
-};
+} satisfies CalendarNode;
 
 /** All calendar nodes that represent self-work or tool slots (no lesson content). */
 export const TOOL_CALENDAR_NODES: CalendarNode[] = [SANCTUM_CALENDAR_NODE];
