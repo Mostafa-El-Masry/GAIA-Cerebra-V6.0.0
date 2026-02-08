@@ -7,7 +7,6 @@ export function useAcademyProgress() {
   const [byTrack, setByTrack] = useState<Record<string, { completedLessonIds: string[] }>>({
     "web-fundamentals": { completedLessonIds: [] },
     "financial-literacy": { completedLessonIds: [] },
-    "sanctum": { completedLessonIds: [] },
   });
 
   const state = useMemo(

@@ -71,7 +71,7 @@ export default function AcademyDashboardPage() {
       const res = await fetch("/api/apollo/academy/paths");
       if (!res.ok) throw new Error("Failed to load paths");
       const data = (await res.json()) as { paths: PathItem[] };
-      setPaths(data.paths ?? []);
+      setPaths((data.paths ?? []).filter((p) => p.id !== "self-healing"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load academy");
     } finally {

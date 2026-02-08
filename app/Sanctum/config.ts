@@ -1,1 +1,1 @@
-export { MAX_SESSIONS_PER_WEEK, MAX_CHARACTERS_PER_SESSION, ALLOWED_TIME_WINDOWS } from "./rules";
+export type SanctumMode = "regulation" | "disengagement";

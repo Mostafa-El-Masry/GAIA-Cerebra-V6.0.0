@@ -17,7 +17,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    const validPathIds = ["web-fundamentals", "financial-literacy", "sanctum", "self-healing"];
+    const validPathIds = ["web-fundamentals", "financial-literacy"];
     if (!validPathIds.includes(pathId)) {
       return NextResponse.json(
         { error: "Invalid pathId." },

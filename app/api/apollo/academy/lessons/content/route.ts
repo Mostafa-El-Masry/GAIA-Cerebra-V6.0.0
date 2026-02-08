@@ -6,8 +6,6 @@ import { getLessonMeta } from "@/lib/academy-db";
 const VALID_PATH_IDS: PathId[] = [
   "web-fundamentals",
   "financial-literacy",
-  "sanctum",
-  "self-healing",
 ];
 
 /** GET ?pathId= &lessonId= — returns lesson content + meta (video_url, required_minutes, completed). No auto-complete. */

@@ -8,8 +8,6 @@ import type { ReflectionType } from "@/lib/academy-db";
 const VALID_PATH_IDS: PathId[] = [
   "web-fundamentals",
   "financial-literacy",
-  "sanctum",
-  "self-healing",
 ];
 
 const LOCAL_REFLECTIONS = "local-reflections";

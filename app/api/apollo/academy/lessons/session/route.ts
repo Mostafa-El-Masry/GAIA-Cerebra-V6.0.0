@@ -5,8 +5,6 @@ import { getLessonMeta, createLessonSession, completeLessonSession, setLessonCom
 const VALID_PATH_IDS: PathId[] = [
   "web-fundamentals",
   "financial-literacy",
-  "sanctum",
-  "self-healing",
 ];
 
 type Body = {

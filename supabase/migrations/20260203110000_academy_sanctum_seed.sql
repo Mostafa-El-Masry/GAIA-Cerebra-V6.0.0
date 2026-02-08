@@ -16,21 +16,8 @@ begin
   end if;
 
   if pid is not null then
-    insert into academy_lessons (path_id, slug, title, file_path, lesson_type, duration_minutes, allows_reflection, allows_audio, allows_video, order_index)
-    values
-      (pid, 'sitting-with-discomfort', 'Sitting With Discomfort', 'lessons/sitting-with-discomfort.md', 'sanctum', 10, true, true, true, 1),
-      (pid, 'urge-surfing', 'Urge Surfing', 'lessons/urge-surfing.md', 'sanctum', 15, true, true, true, 2),
-      (pid, 'body-grounding', 'Body Grounding', 'lessons/body-grounding.md', 'sanctum', 10, true, true, true, 3),
-      (pid, 'emotional-naming', 'Emotional Naming', 'lessons/emotional-naming.md', 'sanctum', 15, true, true, true, 4)
-    on conflict (path_id, slug) do update set
-      title = excluded.title,
-      file_path = excluded.file_path,
-      lesson_type = excluded.lesson_type,
-      duration_minutes = excluded.duration_minutes,
-      allows_reflection = excluded.allows_reflection,
-      allows_audio = excluded.allows_audio,
-      allows_video = excluded.allows_video,
-      order_index = excluded.order_index,
-      updated_at = now();
+    delete from academy_lessons where path_id = pid and slug in (
+      'sitting-with-discomfort', 'urge-surfing', 'body-grounding', 'emotional-naming'
+    );
   end if;
 end $$;

@@ -1,11 +1,14 @@
 "use client";
 
-import { canEnterSanctum } from "../rules";
-import SanctumSession from "./SanctumSession";
+import { isSelfWorkDay } from "@/app/Academy/calendar";
 
-export default function SanctumGate() {
-  if (canEnterSanctum() === false) {
+export default function SanctumGate({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  if (isSelfWorkDay() === false) {
     return null;
   }
-  return <SanctumSession />;
+  return <>{children}</>;
 }

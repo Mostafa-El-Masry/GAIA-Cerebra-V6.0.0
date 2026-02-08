@@ -15,16 +15,12 @@ const LAST_VISITED_FILE = path.join(process.cwd(), "data", "academy", "last-visi
 export const PATH_IDS = [
   "web-fundamentals",
   "financial-literacy",
-  "sanctum",
-  "self-healing",
 ] as const;
 export type PathId = (typeof PATH_IDS)[number];
 
 const PATH_DISPLAY_NAMES: Record<PathId, string> = {
   "web-fundamentals": "Web Fundamentals",
   "financial-literacy": "Financial Literacy",
-  "sanctum": "Sanctum",
-  "self-healing": "Self Healing",
 };
 
 /** Lesson file extension we consider as lesson files */

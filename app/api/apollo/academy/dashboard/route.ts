@@ -49,14 +49,10 @@ export async function GET() {
     const PATH_STAGES: Record<PathId, string> = {
       "web-fundamentals": "Skills phase",
       "financial-literacy": "Applied phase",
-      "sanctum": "Practice phase",
-      "self-healing": "Psychological phase",
     };
     const PATH_FUTURE: Record<PathId, string> = {
       "web-fundamentals": "Builds toward technical fluency and project capability.",
       "financial-literacy": "Builds toward informed financial decisions.",
-      "sanctum": "Builds toward steady presence and self-awareness.",
-      "self-healing": "Builds toward healing and self-work.",
     };
 
     let currentScheduled: {
@@ -85,7 +81,7 @@ export async function GET() {
         status: completed ? "completed" : "incomplete",
         context: {
           reasonNext:
-            "Scheduled by calendar rotation (Web Fundamentals → Financial Literacy → Sanctum).",
+            "Scheduled by calendar rotation (Web Fundamentals → Financial Literacy).",
           stage: PATH_STAGES[nextEntry.pathId] ?? "Current phase",
           futureRelevance: PATH_FUTURE[nextEntry.pathId] ?? "Builds toward path completion.",
         },

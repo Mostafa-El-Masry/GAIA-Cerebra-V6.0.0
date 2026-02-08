@@ -1,9 +1,1 @@
-{
-  "self-healing": [
-    "intro"
-  ],
-  "web-fundamentals": [
-    "lesson-01"
-  ],
-  "financial-literacy": []
-}
+{"web-fundamentals":["lesson-01"],"financial-literacy":[]}

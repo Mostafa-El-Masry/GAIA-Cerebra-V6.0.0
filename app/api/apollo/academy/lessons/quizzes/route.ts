@@ -5,8 +5,6 @@ import { getLessonMeta, getQuizzesForLesson } from "@/lib/academy-db";
 const VALID_PATH_IDS: PathId[] = [
   "web-fundamentals",
   "financial-literacy",
-  "sanctum",
-  "self-healing",
 ];
 
 /** GET ?pathId= &lessonId= — returns 10 quiz questions for the lesson. */
